@@ -1,0 +1,20 @@
+# Backend
+estateflow-backend/target/
+
+# Frontend
+estateflow-frontend/node_modules/
+estateflow-frontend/dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Env files
+.env
