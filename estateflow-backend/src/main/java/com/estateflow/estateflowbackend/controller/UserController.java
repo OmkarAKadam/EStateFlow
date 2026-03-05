@@ -1,11 +1,11 @@
 package com.estateflow.estateflowbackend.controller;
 
-import com.estateflow.estateflowbackend.entity.User;
+import com.estateflow.estateflowbackend.dto.UserRequestDTO;
+import com.estateflow.estateflowbackend.dto.UserResponseDTO;
 import com.estateflow.estateflowbackend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,17 +18,17 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserResponseDTO createUser(@RequestBody UserRequestDTO request) {
+        return userService.createUser(request);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable Long id) {
+    public UserResponseDTO getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 }
