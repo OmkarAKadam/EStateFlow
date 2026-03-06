@@ -1,0 +1,47 @@
+package com.estateflow.estateflowbackend.controller;
+
+import com.estateflow.estateflowbackend.dto.PropertyRequestDTO;
+import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
+import com.estateflow.estateflowbackend.entity.Property;
+import com.estateflow.estateflowbackend.service.PropertyService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/properties")
+public class PropertyController {
+
+    private final PropertyService propertyService;
+
+    public PropertyController(PropertyService propertyService) {
+        this.propertyService = propertyService;
+    }
+
+    @PostMapping
+    public PropertyResponseDTO createProperty(
+            @Valid @RequestBody PropertyRequestDTO request) {
+        return propertyService.createProperty(request);
+    }
+
+    @GetMapping
+    public List<PropertyResponseDTO> getAllProperties() {
+        return propertyService.getAllProperties();
+    }
+
+    @GetMapping("/my-properties")
+    public List<PropertyResponseDTO> getMyProperties() {
+        return propertyService.getMyProperties();
+    }
+
+    @GetMapping("/{id}")
+    public PropertyResponseDTO getPropertyById(@PathVariable Long id) {
+        return propertyService.getPropertyById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProperty(@PathVariable Long id) {
+        propertyService.deleteProperty(id);
+    }
+}
