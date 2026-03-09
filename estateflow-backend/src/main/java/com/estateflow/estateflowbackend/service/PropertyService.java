@@ -6,6 +6,8 @@ import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.User;
 import com.estateflow.estateflowbackend.repository.PropertyRepository;
 import com.estateflow.estateflowbackend.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -60,11 +62,50 @@ public class PropertyService {
         return response;
     }
 
-    public List<PropertyResponseDTO> getAllProperties() {
+    public PropertyResponseDTO updateProperty(Long id, PropertyRequestDTO request) {
 
-        List<Property> properties = propertyRepository.findAll();
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
 
-        return properties.stream().map(property -> {
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Property not found"));
+
+        if (!property.getOwner().getEmail().equals(email)) {
+            throw new RuntimeException("You are not allowed to update this property");
+        }
+
+        property.setTitle(request.getTitle());
+        property.setDescription(request.getDescription());
+        property.setPrice(request.getPrice());
+        property.setLocation(request.getLocation());
+        property.setPropertyType(request.getPropertyType());
+        property.setBedrooms(request.getBedrooms());
+        property.setBathrooms(request.getBathrooms());
+
+        Property updated = propertyRepository.save(property);
+
+        PropertyResponseDTO response = new PropertyResponseDTO();
+
+        response.setId(updated.getId());
+        response.setTitle(updated.getTitle());
+        response.setDescription(updated.getDescription());
+        response.setPrice(updated.getPrice());
+        response.setLocation(updated.getLocation());
+        response.setPropertyType(updated.getPropertyType());
+        response.setBedrooms(updated.getBedrooms());
+        response.setBathrooms(updated.getBathrooms());
+        response.setOwnerEmail(updated.getOwner().getEmail());
+
+        return response;
+    }
+
+    public Page<PropertyResponseDTO> getAllProperties(Pageable pageable) {
+
+        Page<Property> properties = propertyRepository.findAll(pageable);
+
+        return properties.map(property -> {
 
             PropertyResponseDTO response = new PropertyResponseDTO();
 
@@ -79,8 +120,7 @@ public class PropertyService {
             response.setOwnerEmail(property.getOwner().getEmail());
 
             return response;
-
-        }).toList();
+        });
     }
 
     public List<PropertyResponseDTO> getMyProperties() {
@@ -135,6 +175,19 @@ public class PropertyService {
     }
 
     public void deleteProperty(Long id) {
-        propertyRepository.deleteById(id);
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Property not found"));
+
+        if (!property.getOwner().getEmail().equals(email)) {
+            throw new RuntimeException("You are not allowed to delete this property");
+        }
+
+        propertyRepository.delete(property);
     }
 }

@@ -5,6 +5,8 @@ import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
 import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.service.PropertyService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +27,17 @@ public class PropertyController {
         return propertyService.createProperty(request);
     }
 
+    @PutMapping("/{id}")
+    public PropertyResponseDTO updateProperty(
+            @PathVariable Long id,
+            @Valid @RequestBody PropertyRequestDTO request) {
+
+        return propertyService.updateProperty(id, request);
+    }
+
     @GetMapping
-    public List<PropertyResponseDTO> getAllProperties() {
-        return propertyService.getAllProperties();
+    public Page<PropertyResponseDTO> getAllProperties(Pageable pageable) {
+        return propertyService.getAllProperties(pageable);
     }
 
     @GetMapping("/my-properties")

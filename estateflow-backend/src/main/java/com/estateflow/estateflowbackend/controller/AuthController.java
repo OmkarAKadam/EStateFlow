@@ -1,4 +1,4 @@
-package com.estateflow.estateflowbackend.auth;
+package com.estateflow.estateflowbackend.controller;
 
 import com.estateflow.estateflowbackend.dto.LoginRequestDTO;
 import com.estateflow.estateflowbackend.dto.LoginResponseDTO;
