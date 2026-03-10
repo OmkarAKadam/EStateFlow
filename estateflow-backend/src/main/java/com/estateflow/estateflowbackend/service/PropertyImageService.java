@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PropertyImageService {
@@ -36,11 +37,17 @@ public class PropertyImageService {
             directory.mkdirs();
         }
 
-        String filePath = uploadDir + file.getOriginalFilename();
+        String originalName = file.getOriginalFilename();
+
+        String uuid = UUID.randomUUID().toString();
+        String fileName = uuid + "_" + originalName;
+
+        String filePath = uploadDir + fileName;
+
         file.transferTo(new File(filePath));
 
         PropertyImage image = new PropertyImage();
-        image.setImageUrl(file.getOriginalFilename());
+        image.setImageUrl(fileName);
         image.setProperty(property);
 
         PropertyImage saved = imageRepository.save(image);
@@ -70,5 +77,21 @@ public class PropertyImageService {
                     return dto;
                 })
                 .toList();
+    }
+
+    public void deleteImage(Long id) {
+
+        PropertyImage image = imageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+
+        String path = System.getProperty("user.dir") + "/uploads/" + image.getImageUrl();
+
+        File file = new File(path);
+
+        if (file.exists()) {
+            file.delete();
+        }
+
+        imageRepository.delete(image);
     }
 }

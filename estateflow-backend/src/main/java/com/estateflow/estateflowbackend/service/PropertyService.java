@@ -3,6 +3,7 @@ package com.estateflow.estateflowbackend.service;
 import com.estateflow.estateflowbackend.dto.PropertyRequestDTO;
 import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
 import com.estateflow.estateflowbackend.entity.Property;
+import com.estateflow.estateflowbackend.entity.PropertyType;
 import com.estateflow.estateflowbackend.entity.User;
 import com.estateflow.estateflowbackend.repository.PropertyRepository;
 import com.estateflow.estateflowbackend.repository.UserRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -189,5 +191,49 @@ public class PropertyService {
         }
 
         propertyRepository.delete(property);
+    }
+
+    public List<PropertyResponseDTO> searchByLocation(String location) {
+
+        return propertyRepository
+                .findByLocationContainingIgnoreCase(location)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<PropertyResponseDTO> searchByPriceRange(BigDecimal min, BigDecimal max) {
+
+        return propertyRepository
+                .findByPriceBetween(min, max)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<PropertyResponseDTO> searchByType(PropertyType type) {
+
+        return propertyRepository
+                .findByPropertyType(type)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    private PropertyResponseDTO mapToResponse(Property property) {
+
+        PropertyResponseDTO response = new PropertyResponseDTO();
+
+        response.setId(property.getId());
+        response.setTitle(property.getTitle());
+        response.setDescription(property.getDescription());
+        response.setPrice(property.getPrice());
+        response.setLocation(property.getLocation());
+        response.setPropertyType(property.getPropertyType());
+        response.setBedrooms(property.getBedrooms());
+        response.setBathrooms(property.getBathrooms());
+        response.setOwnerEmail(property.getOwner().getEmail());
+
+        return response;
     }
 }

@@ -3,12 +3,14 @@ package com.estateflow.estateflowbackend.controller;
 import com.estateflow.estateflowbackend.dto.PropertyRequestDTO;
 import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
 import com.estateflow.estateflowbackend.entity.Property;
+import com.estateflow.estateflowbackend.entity.PropertyType;
 import com.estateflow.estateflowbackend.service.PropertyService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -53,5 +55,22 @@ public class PropertyController {
     @DeleteMapping("/{id}")
     public void deleteProperty(@PathVariable Long id) {
         propertyService.deleteProperty(id);
+    }
+
+    @GetMapping("/search/location")
+    public List<PropertyResponseDTO> searchByLocation(@RequestParam String location) {
+        return propertyService.searchByLocation(location);
+    }
+
+    @GetMapping("/search/price")
+    public List<PropertyResponseDTO> searchByPrice(
+            @RequestParam BigDecimal min,
+            @RequestParam BigDecimal max) {
+        return propertyService.searchByPriceRange(min, max);
+    }
+
+    @GetMapping("/search/type")
+    public List<PropertyResponseDTO> searchByType(@RequestParam PropertyType type) {
+        return propertyService.searchByType(type);
     }
 }

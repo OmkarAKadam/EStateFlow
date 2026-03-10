@@ -31,4 +31,9 @@ public class PropertyImageController {
     public List<PropertyImageResponseDTO> getImagesByProperty(@PathVariable Long propertyId) {
         return imageService.getImagesByProperty(propertyId);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteImage(@PathVariable Long id) {
+        imageService.deleteImage(id);
+    }
 }
