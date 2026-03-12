@@ -1,28 +1,45 @@
 import { createContext, useState } from "react";
-import * as authService from "../services/authService";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
 
-  const loginUser = async (credentials) => {
-    const response = await authService.login(credentials);
+  const storedToken = localStorage.getItem("token");
 
-    const token = response.data.token;
+  const [token, setToken] = useState(storedToken);
+  const [role, setRole] = useState(
+    storedToken ? jwtDecode(storedToken).role : null
+  );
+
+  const login = (token) => {
+
+    const decoded = jwtDecode(token);
 
     localStorage.setItem("token", token);
 
-    setUser({ token });
+    setToken(token);
+    setRole(decoded.role);
   };
 
-  const logoutUser = () => {
+  const logout = () => {
+
     localStorage.removeItem("token");
-    setUser(null);
+
+    setToken(null);
+    setRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginUser, logoutUser }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        role,
+        isAuthenticated: !!token,
+        login,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
