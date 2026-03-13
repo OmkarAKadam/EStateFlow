@@ -14,6 +14,7 @@ public class MessageResponseDTO {
     private String receiverEmail;
 
     private Long propertyId;
-
+    private Long senderId;
+    private Long receiverId;
     private Boolean isRead;
 }

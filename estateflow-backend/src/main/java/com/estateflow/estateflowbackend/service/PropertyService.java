@@ -50,18 +50,7 @@ public class PropertyService {
 
         Property saved = propertyRepository.save(property);
 
-        PropertyResponseDTO response = new PropertyResponseDTO();
-        response.setId(saved.getId());
-        response.setTitle(saved.getTitle());
-        response.setDescription(saved.getDescription());
-        response.setPrice(saved.getPrice());
-        response.setLocation(saved.getLocation());
-        response.setPropertyType(saved.getPropertyType());
-        response.setBedrooms(saved.getBedrooms());
-        response.setBathrooms(saved.getBathrooms());
-        response.setOwnerEmail(owner.getEmail());
-
-        return response;
+        return mapToResponse(saved);
     }
 
     public PropertyResponseDTO updateProperty(Long id, PropertyRequestDTO request) {
@@ -88,41 +77,14 @@ public class PropertyService {
 
         Property updated = propertyRepository.save(property);
 
-        PropertyResponseDTO response = new PropertyResponseDTO();
-
-        response.setId(updated.getId());
-        response.setTitle(updated.getTitle());
-        response.setDescription(updated.getDescription());
-        response.setPrice(updated.getPrice());
-        response.setLocation(updated.getLocation());
-        response.setPropertyType(updated.getPropertyType());
-        response.setBedrooms(updated.getBedrooms());
-        response.setBathrooms(updated.getBathrooms());
-        response.setOwnerEmail(updated.getOwner().getEmail());
-
-        return response;
+        return mapToResponse(updated);
     }
 
     public Page<PropertyResponseDTO> getAllProperties(Pageable pageable) {
 
         Page<Property> properties = propertyRepository.findAll(pageable);
 
-        return properties.map(property -> {
-
-            PropertyResponseDTO response = new PropertyResponseDTO();
-
-            response.setId(property.getId());
-            response.setTitle(property.getTitle());
-            response.setDescription(property.getDescription());
-            response.setPrice(property.getPrice());
-            response.setLocation(property.getLocation());
-            response.setPropertyType(property.getPropertyType());
-            response.setBedrooms(property.getBedrooms());
-            response.setBathrooms(property.getBathrooms());
-            response.setOwnerEmail(property.getOwner().getEmail());
-
-            return response;
-        });
+        return properties.map(this::mapToResponse);
     }
 
     public List<PropertyResponseDTO> getMyProperties() {
@@ -137,23 +99,9 @@ public class PropertyService {
 
         List<Property> properties = propertyRepository.findByOwner(owner);
 
-        return properties.stream().map(property -> {
-
-            PropertyResponseDTO response = new PropertyResponseDTO();
-
-            response.setId(property.getId());
-            response.setTitle(property.getTitle());
-            response.setDescription(property.getDescription());
-            response.setPrice(property.getPrice());
-            response.setLocation(property.getLocation());
-            response.setPropertyType(property.getPropertyType());
-            response.setBedrooms(property.getBedrooms());
-            response.setBathrooms(property.getBathrooms());
-            response.setOwnerEmail(owner.getEmail());
-
-            return response;
-
-        }).toList();
+        return properties.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     public PropertyResponseDTO getPropertyById(Long id) {
@@ -161,19 +109,7 @@ public class PropertyService {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Property not found"));
 
-        PropertyResponseDTO response = new PropertyResponseDTO();
-
-        response.setId(property.getId());
-        response.setTitle(property.getTitle());
-        response.setDescription(property.getDescription());
-        response.setPrice(property.getPrice());
-        response.setLocation(property.getLocation());
-        response.setPropertyType(property.getPropertyType());
-        response.setBedrooms(property.getBedrooms());
-        response.setBathrooms(property.getBathrooms());
-        response.setOwnerEmail(property.getOwner().getEmail());
-
-        return response;
+        return mapToResponse(property);
     }
 
     public void deleteProperty(Long id) {
@@ -232,6 +168,7 @@ public class PropertyService {
         response.setPropertyType(property.getPropertyType());
         response.setBedrooms(property.getBedrooms());
         response.setBathrooms(property.getBathrooms());
+        response.setOwnerId(property.getOwner().getId());
         response.setOwnerEmail(property.getOwner().getEmail());
 
         return response;

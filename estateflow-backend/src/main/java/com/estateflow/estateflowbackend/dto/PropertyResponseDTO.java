@@ -18,6 +18,7 @@ public class PropertyResponseDTO {
     private PropertyType propertyType;
     private Integer bedrooms;
     private Integer bathrooms;
+    private Long ownerId;
     private String ownerEmail;
 
 }

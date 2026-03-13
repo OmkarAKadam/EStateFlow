@@ -6,6 +6,9 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import MyPropertiesPage from "../pages/MyPropertiesPage";
 import ProtectedRoute from "../components/ProtectedRoute";
+import FavoritesPage from "../pages/FavoritesPage";
+import InboxPage from "../pages/InboxPage";
+import SentMessagesPage from "../pages/SentMessagesPage";
 
 const AppRoutes = () => {
   return (
@@ -23,6 +26,17 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/favorites"
+        element={
+          <ProtectedRoute>
+            <FavoritesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/messages" element={<InboxPage />} />
+
+      <Route path="/messages/sent" element={<SentMessagesPage />} />
     </Routes>
   );
 };

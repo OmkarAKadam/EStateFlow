@@ -23,7 +23,8 @@ const Navbar = () => {
       {isAuthenticated && (
         <>
           <Link to="/favorites">Favorites</Link>
-          <Link to="/messages">Messages</Link>
+          <Link to="/messages">Inbox</Link>
+          <Link to="/messages/sent">Sent</Link>
         </>
       )}
 
