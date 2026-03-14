@@ -144,7 +144,6 @@ src
 │   Navbar.jsx
 │   PropertyCard.jsx
 │   ProtectedRoute.jsx
-│   MessageItem.jsx
 │
 ├── pages
 │   LoginPage.jsx
