@@ -118,7 +118,25 @@ public class MessageService {
         dto.setSenderId(message.getSender().getId());
         dto.setReceiverId(message.getReceiver().getId());
         dto.setIsRead(message.getIsRead());
+        dto.setCreatedAt(message.getCreatedAt());
 
         return dto;
+    }
+
+    public List<MessageResponseDTO> getConversation(Long otherUserId, Long propertyId) {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return messageRepository
+                .findConversation(currentUser.getId(), otherUserId, propertyId)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 }

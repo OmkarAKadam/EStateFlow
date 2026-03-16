@@ -7,8 +7,7 @@ import RegisterPage from "../pages/RegisterPage";
 import MyPropertiesPage from "../pages/MyPropertiesPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FavoritesPage from "../pages/FavoritesPage";
-import InboxPage from "../pages/InboxPage";
-import SentMessagesPage from "../pages/SentMessagesPage";
+import MessagesPage from "../pages/MessagesPage";
 
 const AppRoutes = () => {
   return (
@@ -34,9 +33,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="/messages" element={<InboxPage />} />
-
-      <Route path="/messages/sent" element={<SentMessagesPage />} />
+      <Route path="/messages" element={<MessagesPage />} />
     </Routes>
   );
 };

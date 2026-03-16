@@ -7,10 +7,11 @@ export const AuthProvider = ({ children }) => {
 
   const storedToken = localStorage.getItem("token");
 
+  const decoded = storedToken ? jwtDecode(storedToken) : null;
+
   const [token, setToken] = useState(storedToken);
-  const [role, setRole] = useState(
-    storedToken ? jwtDecode(storedToken).role : null
-  );
+  const [role, setRole] = useState(decoded?.role);
+  const [user, setUser] = useState(decoded);
 
   const login = (token) => {
 
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }) => {
 
     setToken(token);
     setRole(decoded.role);
+    setUser(decoded);
   };
 
   const logout = () => {
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }) => {
 
     setToken(null);
     setRole(null);
+    setUser(null);
     window.location.href = "/";
   };
 
@@ -36,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         token,
         role,
+        user,
         isAuthenticated: !!token,
         login,
         logout

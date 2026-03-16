@@ -36,4 +36,12 @@ public class MessageController {
     public void markAsRead(@PathVariable Long id) {
         messageService.markAsRead(id);
     }
+
+    @GetMapping("/conversation")
+    public List<MessageResponseDTO> getConversation(
+            @RequestParam Long userId,
+            @RequestParam Long propertyId) {
+
+        return messageService.getConversation(userId, propertyId);
+    }
 }

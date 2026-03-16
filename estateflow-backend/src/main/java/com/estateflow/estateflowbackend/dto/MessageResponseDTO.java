@@ -3,6 +3,8 @@ package com.estateflow.estateflowbackend.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class MessageResponseDTO {
@@ -17,4 +19,5 @@ public class MessageResponseDTO {
     private Long senderId;
     private Long receiverId;
     private Boolean isRead;
+    private LocalDateTime createdAt;
 }
