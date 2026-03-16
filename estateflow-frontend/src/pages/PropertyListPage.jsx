@@ -90,27 +90,49 @@ const PropertyListPage = () => {
     setPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
   };
 
-  if (loading) return <p>Loading properties...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading)
+    return (
+      <div className="text-center py-10 text-gray-500">
+        Loading properties...
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="text-center py-10 text-red-500">
+        {error}
+      </div>
+    );
 
   return (
-    <div>
-      <h1>Properties</h1>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
 
-      <div style={{ marginBottom: "20px" }}>
+      <h1 className="text-3xl font-bold text-gray-800">
+        Properties
+      </h1>
+
+      <div className="bg-white p-4 rounded-lg shadow flex flex-wrap gap-3 items-center">
+
         <input
+          className="border rounded-lg px-3 py-2"
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
 
-        <button onClick={handleLocationSearch}>Search Location</button>
+        <button
+          onClick={handleLocationSearch}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Search
+        </button>
 
         <input
           type="number"
           placeholder="Min Price"
           value={minPrice}
           onChange={(e) => setMinPrice(e.target.value)}
+          className="border rounded-lg px-3 py-2"
         />
 
         <input
@@ -118,45 +140,79 @@ const PropertyListPage = () => {
           placeholder="Max Price"
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
+          className="border rounded-lg px-3 py-2"
         />
 
-        <button onClick={handlePriceSearch}>Search Price</button>
+        <button
+          onClick={handlePriceSearch}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Price
+        </button>
 
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          className="border rounded-lg px-3 py-2"
+        >
           <option value="">Select Type</option>
           <option value="ROOM">Room</option>
           <option value="FLAT">Flat</option>
           <option value="HOUSE">House</option>
         </select>
 
-        <button onClick={handleTypeSearch}>Search Type</button>
+        <button
+          onClick={handleTypeSearch}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Type
+        </button>
 
-        <button onClick={handleReset}>Reset</button>
+        <button
+          onClick={handleReset}
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+        >
+          Reset
+        </button>
+
       </div>
 
       {properties.length > 0 ? (
-        properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
-        ))
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
+        </div>
       ) : (
-        <p>No properties found.</p>
+        <p className="text-gray-500">No properties found.</p>
       )}
 
       {totalPages > 1 && (
-        <div style={{ marginTop: "20px" }}>
-          <button onClick={handlePreviousPage} disabled={page === 0}>
+        <div className="flex justify-center items-center gap-4 pt-6">
+
+          <button
+            onClick={handlePreviousPage}
+            disabled={page === 0}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
             Previous
           </button>
 
-          <span style={{ margin: "0 10px" }}>
+          <span className="text-gray-600">
             Page {page + 1} of {totalPages}
           </span>
 
-          <button onClick={handleNextPage} disabled={page >= totalPages - 1}>
+          <button
+            onClick={handleNextPage}
+            disabled={page >= totalPages - 1}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
             Next
           </button>
+
         </div>
       )}
+
     </div>
   );
 };

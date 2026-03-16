@@ -3,7 +3,6 @@ import { getMyProperties } from "../services/propertyService";
 import PropertyCard from "../components/PropertyCard";
 
 const MyPropertiesPage = () => {
-
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
@@ -11,33 +10,33 @@ const MyPropertiesPage = () => {
   }, []);
 
   const fetchMyProperties = async () => {
-
     try {
-
       const response = await getMyProperties();
-
       setProperties(response.data);
-
     } catch (error) {
       console.error("Failed to load properties", error);
     }
   };
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
 
-      <h1>My Properties</h1>
+      <h1 className="text-3xl font-bold text-gray-800">
+        My Properties
+      </h1>
 
-      {properties.length === 0 && (
-        <p>No properties created yet.</p>
+      {properties.length === 0 ? (
+        <p className="text-gray-500">No properties created yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.map((property) => (
+            <PropertyCard
+              key={property.id}
+              property={property}
+            />
+          ))}
+        </div>
       )}
-
-      {properties.map((property) => (
-        <PropertyCard
-          key={property.id}
-          property={property}
-        />
-      ))}
 
     </div>
   );

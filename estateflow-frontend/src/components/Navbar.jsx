@@ -6,36 +6,71 @@ const Navbar = () => {
   const { isAuthenticated, role, logout } = useContext(AuthContext);
 
   return (
-    <nav>
-      <Link to="/">Home</Link>
+    <nav className="bg-white shadow">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link
+          to="/"
+          className="text-2xl font-bold text-blue-600 tracking-tight"
+        >
+          EstateFlow
+        </Link>
 
-      {!isAuthenticated && (
-        <>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </>
-      )}
+        <div className="flex items-center gap-6 text-sm font-medium text-gray-700">
+          <Link className="hover:text-blue-600 transition" to="/">
+            Home
+          </Link>
 
-      {isAuthenticated && role === "OWNER" && (
-        <Link to="/create-property">Create Property</Link>
-      )}
+          {!isAuthenticated && (
+            <>
+              <Link className="hover:text-blue-600 transition" to="/login">
+                Login
+              </Link>
 
-      {isAuthenticated && (
-        <>
-          <Link to="/favorites">Favorites</Link>
-          <Link to="/messages">Inbox</Link>
-          <Link to="/messages/sent">Sent</Link>
-        </>
-      )}
+              <Link
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                to="/register"
+              >
+                Register
+              </Link>
+            </>
+          )}
 
-      {isAuthenticated && role === "OWNER" && (
-        <>
-          <Link to="/create-property">Create Property</Link>
-          <Link to="/my-properties">My Properties</Link>
-        </>
-      )}
+          {isAuthenticated && role === "OWNER" && (
+            <>
+              <Link className="hover:text-blue-600 transition" to="/create-property">
+                Create Property
+              </Link>
 
-      {isAuthenticated && <button onClick={logout}>Logout</button>}
+              <Link className="hover:text-blue-600 transition" to="/my-properties">
+                My Properties
+              </Link>
+            </>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <Link className="hover:text-blue-600 transition" to="/favorites">
+                Favorites
+              </Link>
+
+              <Link className="hover:text-blue-600 transition" to="/messages">
+                Inbox
+              </Link>
+
+              <Link className="hover:text-blue-600 transition" to="/messages/sent">
+                Sent
+              </Link>
+
+              <button
+                onClick={logout}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </nav>
   );
 };

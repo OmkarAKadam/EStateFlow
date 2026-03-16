@@ -1,7 +1,7 @@
 import api from "../api/axios";
 
 export const getAllProperties = (page) => {
-  return api.get(`/properties?page=${page}&size=10`);
+  return api.get(`/properties?page=${page}&size=9`);
 };
 
 export const getPropertyById = (id) => {

@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
 
     setToken(null);
     setRole(null);
+    window.location.href = "/";
   };
 
   return (
