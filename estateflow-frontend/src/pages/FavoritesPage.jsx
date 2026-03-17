@@ -21,7 +21,9 @@ const FavoritesPage = () => {
   const handleRemove = async (favoriteId) => {
     try {
       await removeFavorite(favoriteId);
-      setFavorites((prev) => prev.filter((fav) => fav.favoriteId !== favoriteId));
+      setFavorites((prev) =>
+        prev.filter((fav) => fav.favoriteId !== favoriteId),
+      );
     } catch (error) {
       console.error("Remove failed", error);
     }
@@ -35,18 +37,29 @@ const FavoritesPage = () => {
         <p className="text-gray-500">You have no saved properties yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {favorites.map((fav) => (
-            <div key={fav.favoriteId} className="relative">
-              <PropertyCard property={fav} />
+          {favorites.map((fav) => {
+            const property = {
+              id: fav.propertyId,
+              title: fav.title,
+              location: fav.location,
+              price: fav.price,
+              propertyType: fav.propertyType,
+              ownerEmail: fav.ownerEmail,
+            };
 
-              <button
-                onClick={() => handleRemove(fav.favoriteId)}
-                className="absolute top-3 right-3 bg-white text-red-500 px-3 py-1 rounded-lg shadow hover:bg-red-500 hover:text-white transition"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+            return (
+              <div key={fav.favoriteId} className="relative">
+                <PropertyCard property={property} />
+
+                <button
+                  onClick={() => handleRemove(fav.favoriteId)}
+                  className="absolute top-3 right-3 bg-white text-red-500 px-3 py-1 rounded-lg shadow hover:bg-red-500 hover:text-white transition"
+                >
+                  Remove
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

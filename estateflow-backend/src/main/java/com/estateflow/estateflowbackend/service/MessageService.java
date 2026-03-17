@@ -71,6 +71,23 @@ public class MessageService {
                 .toList();
     }
 
+    public List<MessageResponseDTO> getAllUserMessages() {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return messageRepository
+                .findAllUserMessages(user.getId())
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
     public List<MessageResponseDTO> getSent() {
 
         String email = SecurityContextHolder

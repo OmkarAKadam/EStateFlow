@@ -4,10 +4,11 @@ import { getPropertyById } from "../services/propertyService";
 import { getImagesByProperty } from "../services/imageService";
 import { addFavorite } from "../services/favoriteService";
 import { sendMessage } from "../services/messageService";
+import { useNavigate } from "react-router-dom";
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const [property, setProperty] = useState(null);
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
@@ -27,15 +28,25 @@ const PropertyDetailPage = () => {
   };
 
   const handleSendMessage = async () => {
+    if (!message.trim()) return;
+
     try {
-      await sendMessage({
+      const res = await sendMessage({
         propertyId: property.id,
         receiverId: property.ownerId,
         content: message,
       });
 
-      alert("Message sent");
       setMessage("");
+
+      navigate("/messages", {
+        state: {
+          userId: property.ownerId,
+          email: property.ownerEmail,
+          propertyId: property.id,
+          initialMessage: res.data,
+        },
+      });
     } catch (error) {
       console.error("Message failed", error);
     }
@@ -53,16 +64,12 @@ const PropertyDetailPage = () => {
 
   if (!property)
     return (
-      <div className="p-10 text-center text-gray-500">
-        Loading property...
-      </div>
+      <div className="p-10 text-center text-gray-500">Loading property...</div>
     );
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
         <div className="space-y-4">
           {images.length === 0 && (
             <div className="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-500 rounded-lg">
@@ -80,14 +87,9 @@ const PropertyDetailPage = () => {
         </div>
 
         <div className="space-y-4">
+          <h1 className="text-3xl font-bold text-gray-800">{property.title}</h1>
 
-          <h1 className="text-3xl font-bold text-gray-800">
-            {property.title}
-          </h1>
-
-          <p className="text-gray-500">
-            {property.location}
-          </p>
+          <p className="text-gray-500">{property.location}</p>
 
           <div className="flex gap-6 text-gray-600">
             <span>{property.propertyType}</span>
@@ -107,9 +109,7 @@ const PropertyDetailPage = () => {
           </button>
 
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-gray-800">
-              Contact Owner
-            </h3>
+            <h3 className="font-semibold mb-2 text-gray-800">Contact Owner</h3>
 
             <textarea
               className="w-full border rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -126,7 +126,6 @@ const PropertyDetailPage = () => {
               Send Message
             </button>
           </div>
-
         </div>
       </div>
 
@@ -135,11 +134,8 @@ const PropertyDetailPage = () => {
           Description
         </h3>
 
-        <p className="text-gray-600">
-          {property.description}
-        </p>
+        <p className="text-gray-600">{property.description}</p>
       </div>
-
     </div>
   );
 };

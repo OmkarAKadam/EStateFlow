@@ -22,6 +22,11 @@ public class MessageController {
         return messageService.sendMessage(request);
     }
 
+    @GetMapping("/all")
+    public List<MessageResponseDTO> getAllUserMessages() {
+        return messageService.getAllUserMessages();
+    }
+
     @GetMapping("/inbox")
     public List<MessageResponseDTO> getInbox() {
         return messageService.getInbox();
