@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getImagesByProperty } from "../services/imageService";
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, isOwner = false, onDelete }) => {
   const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const PropertyCard = ({ property }) => {
 
   return (
     <div className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
-
+      
       {imageUrl ? (
         <img
           src={imageUrl}
@@ -64,6 +64,15 @@ const PropertyCard = ({ property }) => {
         >
           View Details
         </Link>
+
+        {isOwner && (
+          <button
+            onClick={() => onDelete(property.id)}
+            className="w-full mt-2 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+          >
+            🗑 Delete
+          </button>
+        )}
 
       </div>
     </div>

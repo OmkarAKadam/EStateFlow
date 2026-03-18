@@ -1,22 +1,45 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getPropertyById } from "../services/propertyService";
+import { useEffect, useState, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getPropertyById, deleteProperty } from "../services/propertyService";
 import { getImagesByProperty } from "../services/imageService";
 import { addFavorite } from "../services/favoriteService";
 import { sendMessage } from "../services/messageService";
-import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [property, setProperty] = useState(null);
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
+
+  const { user } = useContext(AuthContext);
+
+  const isOwner = property && user?.id === property.ownerId;
 
   useEffect(() => {
     loadProperty();
     loadImages();
   }, [id]);
+
+  const loadProperty = async () => {
+    try {
+      const response = await getPropertyById(id);
+      setProperty(response.data);
+    } catch (error) {
+      console.error("Failed to load property", error);
+    }
+  };
+
+  const loadImages = async () => {
+    try {
+      const response = await getImagesByProperty(id);
+      setImages(response.data);
+    } catch (error) {
+      console.error("Failed to load images", error);
+    }
+  };
 
   const handleFavorite = async () => {
     try {
@@ -52,42 +75,52 @@ const PropertyDetailPage = () => {
     }
   };
 
-  const loadProperty = async () => {
-    const response = await getPropertyById(id);
-    setProperty(response.data);
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteProperty(property.id);
+      alert("Property deleted");
+      navigate("/my-properties");
+    } catch (error) {
+      console.error("Delete failed", error);
+    }
   };
 
-  const loadImages = async () => {
-    const response = await getImagesByProperty(id);
-    setImages(response.data);
-  };
-
-  if (!property)
+  if (!property) {
     return (
-      <div className="p-10 text-center text-gray-500">Loading property...</div>
+      <div className="p-10 text-center text-gray-500">
+        Loading property...
+      </div>
     );
-
+  }
+console.log("isOwner:", isOwner);
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
         <div className="space-y-4">
-          {images.length === 0 && (
+          {images.length === 0 ? (
             <div className="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-500 rounded-lg">
               No Images
             </div>
+          ) : (
+            images.map((img) => (
+              <img
+                key={img.id}
+                src={`http://localhost:8080${img.imageUrl}`}
+                className="w-full h-72 object-cover rounded-lg"
+              />
+            ))
           )}
-
-          {images.map((img) => (
-            <img
-              key={img.id}
-              src={`http://localhost:8080${img.imageUrl}`}
-              className="w-full h-72 object-cover rounded-lg"
-            />
-          ))}
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold text-gray-800">{property.title}</h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {property.title}
+          </h1>
 
           <p className="text-gray-500">{property.location}</p>
 
@@ -108,8 +141,28 @@ const PropertyDetailPage = () => {
             ❤️ Add to Favorites
           </button>
 
+          {isOwner && (
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate(`/edit-property/${property.id}`)}
+                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+              >
+                ✏️ Edit
+              </button>
+
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              >
+                🗑 Delete
+              </button>
+            </div>
+          )}
+
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-gray-800">Contact Owner</h3>
+            <h3 className="font-semibold mb-2 text-gray-800">
+              Contact Owner
+            </h3>
 
             <textarea
               className="w-full border rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"

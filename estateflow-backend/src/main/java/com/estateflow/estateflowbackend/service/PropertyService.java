@@ -5,8 +5,11 @@ import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
 import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.PropertyType;
 import com.estateflow.estateflowbackend.entity.User;
+import com.estateflow.estateflowbackend.repository.FavoriteRepository;
+import com.estateflow.estateflowbackend.repository.MessageRepository;
 import com.estateflow.estateflowbackend.repository.PropertyRepository;
 import com.estateflow.estateflowbackend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,11 +23,15 @@ public class PropertyService {
 
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final MessageRepository messageRepository;
 
     public PropertyService(PropertyRepository propertyRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository, FavoriteRepository favoriteRepository, MessageRepository messageRepository) {
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
+        this.favoriteRepository = favoriteRepository;
+        this.messageRepository = messageRepository;
     }
 
     public PropertyResponseDTO createProperty(PropertyRequestDTO request) {
@@ -112,6 +119,7 @@ public class PropertyService {
         return mapToResponse(property);
     }
 
+    @Transactional
     public void deleteProperty(Long id) {
 
         String email = SecurityContextHolder
@@ -126,6 +134,8 @@ public class PropertyService {
             throw new RuntimeException("You are not allowed to delete this property");
         }
 
+        favoriteRepository.deleteByProperty(property);
+        messageRepository.deleteByProperty(property);
         propertyRepository.delete(property);
     }
 

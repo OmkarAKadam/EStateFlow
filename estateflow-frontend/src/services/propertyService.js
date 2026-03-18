@@ -12,9 +12,16 @@ export const createProperty = (data) => {
   return api.post("/properties", data);
 };
 
-
 export const getMyProperties = () => {
   return api.get("/properties/my-properties");
+};
+
+export const updateProperty = (id, data) => {
+  return api.put(`/properties/${id}`, data);
+};
+
+export const deleteProperty = (id) => {
+  return api.delete(`/properties/${id}`);
 };
 
 export const searchByLocation = (location) => {

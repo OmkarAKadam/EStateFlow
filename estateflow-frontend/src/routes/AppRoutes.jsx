@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import HomePage from "../pages/HomePage";
 import PropertyListPage from "../pages/PropertyListPage";
 import PropertyDetailPage from "../pages/PropertyDetailPage";
 import CreatePropertyPage from "../pages/CreatePropertyPage";
@@ -8,11 +9,13 @@ import MyPropertiesPage from "../pages/MyPropertiesPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FavoritesPage from "../pages/FavoritesPage";
 import MessagesPage from "../pages/MessagesPage";
+import EditPropertyPage from "../pages/EditPropertyPage";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<PropertyListPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/properties" element={<PropertyListPage />} />
       <Route path="/properties/:id" element={<PropertyDetailPage />} />
       <Route path="/create-property" element={<CreatePropertyPage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -34,6 +37,7 @@ const AppRoutes = () => {
         }
       />
       <Route path="/messages" element={<MessagesPage />} />
+      <Route path="/edit-property/:id" element={<EditPropertyPage />} />
     </Routes>
   );
 };

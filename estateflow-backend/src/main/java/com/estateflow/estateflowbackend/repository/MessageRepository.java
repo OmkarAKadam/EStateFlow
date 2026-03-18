@@ -1,6 +1,7 @@
 package com.estateflow.estateflowbackend.repository;
 
 import com.estateflow.estateflowbackend.entity.Message;
+import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,8 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     List<Message> findByReceiver(User receiver);
+
+    void deleteByProperty(Property property);
 
     List<Message> findBySender(User sender);
 
