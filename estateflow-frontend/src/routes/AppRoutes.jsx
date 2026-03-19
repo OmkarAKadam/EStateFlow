@@ -10,6 +10,10 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import FavoritesPage from "../pages/FavoritesPage";
 import MessagesPage from "../pages/MessagesPage";
 import EditPropertyPage from "../pages/EditPropertyPage";
+import AboutPage from "../pages/AboutPage";
+import ContactPage from "../pages/ContactPage";
+import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
+import TermsPage from "../pages/TermsPage";
 
 const AppRoutes = () => {
   return (
@@ -38,6 +42,10 @@ const AppRoutes = () => {
       />
       <Route path="/messages" element={<MessagesPage />} />
       <Route path="/edit-property/:id" element={<EditPropertyPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
     </Routes>
   );
 };
