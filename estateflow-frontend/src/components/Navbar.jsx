@@ -1,93 +1,134 @@
-import { Link } from "react-router-dom";
-import { useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+
+const NavLink = ({ to, children, onClick }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`block px-4 py-2 rounded-lg text-sm font-medium transition ${
+        isActive
+          ? "bg-blue-50 text-blue-600"
+          : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+      }`}
+    >
+      {children}
+    </Link>
+  );
+};
 
 const Navbar = () => {
   const { isAuthenticated, role, logout } = useContext(AuthContext);
+  const [open, setOpen] = useState(false);
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav className="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200/70 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-        {/* Logo */}
         <Link
           to="/"
-          className="text-2xl font-bold text-blue-600 tracking-tight hover:text-blue-700 transition"
+          className="flex items-center gap-2 text-xl font-semibold text-gray-900"
         >
+          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span className="text-white font-bold">E</span>
+          </div>
           EstateFlow
         </Link>
 
-        <div className="flex items-center gap-4 text-sm font-medium text-gray-700">
+        <div className="hidden md:flex items-center gap-2">
+          <NavLink to="/">Home</NavLink>
 
-          <Link
-            className="px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 transition"
-            to="/"
-          >
-            Home
-          </Link>
-
-          {!isAuthenticated && (
+          {isAuthenticated && (
             <>
-              <Link
-                className="px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 transition"
-                to="/login"
-              >
-                Login
-              </Link>
-
-              <Link
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition shadow-sm"
-                to="/register"
-              >
-                Register
-              </Link>
+              <NavLink to="/favorites">Favorites</NavLink>
+              <NavLink to="/messages">Messages</NavLink>
             </>
           )}
 
           {isAuthenticated && role === "OWNER" && (
             <>
-              <Link
-                className="px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 transition"
-                to="/create-property"
-              >
-                Create Property
-              </Link>
-
-              <Link
-                className="px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 transition"
-                to="/my-properties"
-              >
-                My Properties
-              </Link>
-            </>
-          )}
-
-          {isAuthenticated && (
-            <>
-              <Link
-                className="px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 transition"
-                to="/favorites"
-              >
-                Favorites
-              </Link>
-
-              <Link
-                className="px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 transition"
-                to="/messages"
-              >
-                Messages
-              </Link>
-
-              <button
-                onClick={logout}
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition shadow-sm"
-              >
-                Logout
-              </button>
+              <NavLink to="/create-property">Create</NavLink>
+              <NavLink to="/my-properties">My Listings</NavLink>
             </>
           )}
         </div>
+
+        <div className="hidden md:flex items-center gap-3">
+          {!isAuthenticated ? (
+            <>
+              <Link
+                to="/login"
+                className="text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="text-sm font-medium bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 transition"
+              >
+                Register
+              </Link>
+            </>
+          ) : (
+            <button
+              onClick={logout}
+              className="text-sm font-medium text-red-600 hover:bg-red-50 px-4 py-2 rounded-full transition"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+        >
+          <span className="text-xl">{open ? "✕" : "☰"}</span>
+        </button>
       </div>
+
+      {open && (
+        <div className="md:hidden px-6 pb-6 space-y-2">
+          <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+
+          {isAuthenticated && (
+            <>
+              <NavLink to="/favorites" onClick={() => setOpen(false)}>Favorites</NavLink>
+              <NavLink to="/messages" onClick={() => setOpen(false)}>Messages</NavLink>
+            </>
+          )}
+
+          {isAuthenticated && role === "OWNER" && (
+            <>
+              <NavLink to="/create-property" onClick={() => setOpen(false)}>Create</NavLink>
+              <NavLink to="/my-properties" onClick={() => setOpen(false)}>My Listings</NavLink>
+            </>
+          )}
+
+          <div className="pt-3 border-t border-gray-200">
+            {!isAuthenticated ? (
+              <>
+                <NavLink to="/login" onClick={() => setOpen(false)}>Login</NavLink>
+                <NavLink to="/register" onClick={() => setOpen(false)}>Register</NavLink>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  logout();
+                  setOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+              >
+                Logout
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

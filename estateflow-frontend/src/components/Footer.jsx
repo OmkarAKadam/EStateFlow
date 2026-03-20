@@ -2,32 +2,83 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white mt-10">
-      <div className="max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-3 gap-6">
+    <footer className="bg-white border-t border-gray-200 mt-auto">
+      <div className="max-w-7xl mx-auto px-6 pt-12 pb-8 text-sm">
 
-        {/* Brand */}
-        <div>
-          <h2 className="text-xl font-bold">EstateFlow</h2>
-          <p className="text-gray-400 mt-2">
-            Find and list properties easily and efficiently.
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+
+          <section className="md:col-span-2">
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4"
+            >
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-bold">E</span>
+              </div>
+              EstateFlow
+            </Link>
+
+            <p className="text-gray-500 max-w-md leading-relaxed">
+              Find and list properties easily and efficiently. Discover your next home or investment with a smooth and modern experience.
+            </p>
+          </section>
+
+          <nav>
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              Explore
+            </h2>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/"
+                  className="text-gray-600 hover:text-blue-600 transition"
+                >
+                  Home
+                </Link>
+              </li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              Legal
+            </h2>
+            <ul className="space-y-3">
+              <li>
+                <Link to="/about" className="text-gray-600 hover:text-blue-600 transition">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="text-gray-600 hover:text-blue-600 transition">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-gray-600 hover:text-blue-600 transition">
+                  Terms
+                </Link>
+              </li>
+            </ul>
+          </nav>
+
         </div>
 
-        {/* Legal */}
-        <div>
-          <h3 className="font-semibold mb-2">Legal</h3>
-          <ul className="space-y-1 text-gray-400">
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
-            <li><Link to="/privacy">Privacy Policy</Link></li>
-            <li><Link to="/terms">Terms & Conditions</Link></li>
-          </ul>
+        <div className="flex flex-col md:flex-row items-center justify-between pt-6 border-t border-gray-100 text-gray-400 text-xs">
+          <p>© {new Date().getFullYear()} EstateFlow. All rights reserved.</p>
+
+          <div className="flex gap-4 mt-4 md:mt-0">
+            <a href="#" className="hover:text-blue-600 transition">Twitter</a>
+            <a href="#" className="hover:text-blue-600 transition">Instagram</a>
+            <a href="#" className="hover:text-blue-600 transition">Facebook</a>
+          </div>
         </div>
 
-      </div>
-
-      <div className="text-center text-gray-500 py-4 border-t border-gray-700">
-        © {new Date().getFullYear()} EstateFlow. All rights reserved.
       </div>
     </footer>
   );

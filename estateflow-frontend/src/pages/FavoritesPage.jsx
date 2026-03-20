@@ -18,17 +18,6 @@ const FavoritesPage = () => {
     }
   };
 
-  const handleRemove = async (favoriteId) => {
-    try {
-      await removeFavorite(favoriteId);
-      setFavorites((prev) =>
-        prev.filter((fav) => fav.favoriteId !== favoriteId),
-      );
-    } catch (error) {
-      console.error("Remove failed", error);
-    }
-  };
-
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">Favorites</h1>
@@ -49,14 +38,16 @@ const FavoritesPage = () => {
 
             return (
               <div key={fav.favoriteId} className="relative">
-                <PropertyCard property={property} />
-
-                <button
-                  onClick={() => handleRemove(fav.favoriteId)}
-                  className="absolute top-3 right-3 bg-white text-red-500 px-3 py-1 rounded-lg shadow hover:bg-red-500 hover:text-white transition"
-                >
-                  Remove
-                </button>
+                <PropertyCard
+                  property={property}
+                  isFavoriteInitial={true}
+                  favoriteId={fav.favoriteId}
+                  onUnfavorite={() =>
+                    setFavorites((prev) =>
+                      prev.filter((f) => f.favoriteId !== fav.favoriteId),
+                    )
+                  }
+                />
               </div>
             );
           })}

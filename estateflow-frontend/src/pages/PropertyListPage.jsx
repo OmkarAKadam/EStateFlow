@@ -6,6 +6,7 @@ import {
   searchByType,
 } from "../services/propertyService";
 import PropertyCard from "../components/PropertyCard";
+import Loader from "../components/Loader";
 
 const PropertyListPage = () => {
   const [properties, setProperties] = useState([]);
@@ -13,7 +14,7 @@ const PropertyListPage = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   const [location, setLocation] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -27,50 +28,63 @@ const PropertyListPage = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      const response = await getAllProperties(page);
-
-      setProperties(response.data.content);
-      setTotalPages(response.data.totalPages);
+      setError("");
+      const res = await getAllProperties(page);
+      setProperties(res.data.content);
+      setTotalPages(res.data.totalPages);
     } catch (err) {
-      console.error("Failed to fetch properties:", err);
-      setError("Failed to load properties");
+      console.error(err);
+      setError("Failed to load properties.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleLocationSearch = async () => {
+    if (!location.trim()) return;
+
+    setLoading(true);
     try {
-      const response = await searchByLocation(location);
-      setProperties(response.data);
+      const res = await searchByLocation(location);
+      setProperties(res.data);
       setTotalPages(1);
       setPage(0);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setError("Location search failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handlePriceSearch = async () => {
+    if (!minPrice && !maxPrice) return;
+
+    setLoading(true);
     try {
-      const response = await searchByPrice(minPrice, maxPrice);
-      setProperties(response.data);
+      const res = await searchByPrice(minPrice, maxPrice);
+      setProperties(res.data);
       setTotalPages(1);
       setPage(0);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setError("Price search failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleTypeSearch = async () => {
+    if (!type) return;
+
+    setLoading(true);
     try {
-      const response = await searchByType(type);
-      setProperties(response.data);
+      const res = await searchByType(type);
+      setProperties(res.data);
       setTotalPages(1);
       setPage(0);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setError("Type filter failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,45 +93,34 @@ const PropertyListPage = () => {
     setMinPrice("");
     setMaxPrice("");
     setType("");
+    setPage(0);
     fetchProperties();
   };
 
-  const handlePreviousPage = () => {
-    setPage((prevPage) => Math.max(prevPage - 1, 0));
-  };
-
-  const handleNextPage = () => {
-    setPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
-  };
-
-  if (loading)
-    return (
-      <div className="text-center py-10 text-gray-500">
-        Loading properties...
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="text-center py-10 text-red-500">
-        {error}
-      </div>
-    );
+  const handlePreviousPage = () => setPage((p) => Math.max(p - 1, 0));
+  const handleNextPage = () => setPage((p) => Math.min(p + 1, totalPages - 1));
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <main className="max-w-7xl mx-auto px-6 py-12 min-h-screen">
 
-      <h1 className="text-3xl font-bold text-gray-800">
-        Properties
-      </h1>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Explore Properties
+        </h1>
+        <p className="text-gray-500 mt-2">
+          Find the right place based on your needs
+        </p>
+      </div>
 
-      <div className="bg-white p-4 rounded-lg shadow flex flex-wrap gap-3 items-center">
+      {/* Filters */}
+      <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-wrap gap-4 mb-10">
 
         <input
-          className="border rounded-lg px-3 py-2"
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          className="border px-4 py-2 rounded-lg w-full sm:w-auto"
         />
 
         <button
@@ -132,7 +135,7 @@ const PropertyListPage = () => {
           placeholder="Min Price"
           value={minPrice}
           onChange={(e) => setMinPrice(e.target.value)}
-          className="border rounded-lg px-3 py-2"
+          className="border px-4 py-2 rounded-lg w-full sm:w-auto"
         />
 
         <input
@@ -140,7 +143,7 @@ const PropertyListPage = () => {
           placeholder="Max Price"
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
-          className="border rounded-lg px-3 py-2"
+          className="border px-4 py-2 rounded-lg w-full sm:w-auto"
         />
 
         <button
@@ -153,9 +156,9 @@ const PropertyListPage = () => {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="border rounded-lg px-3 py-2"
+          className="border px-4 py-2 rounded-lg"
         >
-          <option value="">Select Type</option>
+          <option value="">Type</option>
           <option value="ROOM">Room</option>
           <option value="FLAT">Flat</option>
           <option value="HOUSE">House</option>
@@ -165,7 +168,7 @@ const PropertyListPage = () => {
           onClick={handleTypeSearch}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
-          Type
+          Filter
         </button>
 
         <button
@@ -174,26 +177,32 @@ const PropertyListPage = () => {
         >
           Reset
         </button>
-
       </div>
 
-      {properties.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Content */}
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <div className="text-center text-red-500 py-10">{error}</div>
+      ) : properties.length === 0 ? (
+        <div className="text-center text-gray-500 py-16">
+          No properties found
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
         </div>
-      ) : (
-        <p className="text-gray-500">No properties found.</p>
       )}
 
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 pt-6">
-
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-10">
           <button
             onClick={handlePreviousPage}
             disabled={page === 0}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
           >
             Previous
           </button>
@@ -205,15 +214,14 @@ const PropertyListPage = () => {
           <button
             onClick={handleNextPage}
             disabled={page >= totalPages - 1}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
           >
             Next
           </button>
-
         </div>
       )}
 
-    </div>
+    </main>
   );
 };
 

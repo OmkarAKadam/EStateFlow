@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import {
-  getAllProperties,
-  searchByLocation,
-} from "../services/propertyService";
+import { getAllProperties, searchByLocation } from "../services/propertyService";
 import PropertyCard from "../components/PropertyCard";
+import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
@@ -27,7 +25,7 @@ const HomePage = () => {
       setProperties(res.data.content.slice(0, 6));
     } catch (err) {
       console.error(err);
-      setError("Failed to load properties.");
+      setError("Unable to load properties. Try again later.");
     } finally {
       setLoading(false);
     }
@@ -54,81 +52,107 @@ const HomePage = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
-    <div className="space-y-12">
-      {/* 🔥 HERO */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-24 px-6 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-          Find Your Perfect Property
-        </h1>
+    <main className="flex flex-col min-h-screen">
 
-        <p className="text-lg mb-8 opacity-90">
-          Buy, sell, or rent properties easily with EstateFlow
-        </p>
+      {/* HERO */}
+      <section className="relative w-full h-[480px] flex items-center justify-center px-6 text-center overflow-hidden">
 
-        {/* SEARCH */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 max-w-xl mx-auto">
-          <input
-            id="location"
-            name="location"
-            type="text"
-            placeholder="Search by location..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleKeyPress}
-            className="w-full px-4 py-3 rounded-lg text-black focus:outline-none"
-          />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-700 to-indigo-700" />
+
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-20"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=80')",
+          }}
+        />
+
+        <div className="relative z-10 max-w-3xl w-full space-y-6 text-white">
+          <h1 className="text-3xl md:text-5xl font-bold leading-tight">
+            Find a place you'll love to call home
+          </h1>
+
+          <p className="text-base md:text-lg opacity-90">
+            Discover houses, apartments, and more across your city
+          </p>
+
+          <div className="bg-white rounded-full shadow-lg flex items-center w-full max-w-2xl mx-auto overflow-hidden">
+            <input
+              type="text"
+              placeholder="Search by location..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleKeyPress}
+              className="flex-1 px-5 py-3 text-gray-800 outline-none"
+            />
+
+            <button
+              onClick={handleSearch}
+              disabled={loading}
+              className="bg-blue-600 text-white px-6 py-3 hover:bg-blue-700 transition"
+            >
+              {loading ? "..." : "Search"}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* PROPERTIES */}
+      <section className="max-w-7xl mx-auto px-6 py-16 w-full flex-grow">
+
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Featured Properties
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Handpicked listings for you
+            </p>
+          </div>
 
           <button
-            onClick={handleSearch}
-            disabled={loading}
-            className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 disabled:opacity-60"
+            onClick={() => navigate("/properties")}
+            className="hidden sm:block text-blue-600 font-medium hover:underline"
           >
-            {loading ? "Searching..." : "Search"}
+            View all →
           </button>
         </div>
-      </div>
 
-      {/* 🏘 PROPERTIES */}
-      <div className="max-w-7xl mx-auto px-6 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-800">
-          Featured Properties
-        </h2>
+        {error && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
 
-        {/* ERROR */}
-        {error && <p className="text-red-500">{error}</p>}
-
-        {/* LOADING */}
         {loading ? (
-          <p className="text-gray-500">Loading properties...</p>
+          <Loader />
         ) : properties.length === 0 ? (
-          <p className="text-gray-500">
-            No properties found. Try a different location.
-          </p>
+          <div className="text-center py-16 text-gray-500">
+            No properties found
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         )}
 
-        {/* VIEW ALL */}
-        <div className="text-center pt-4">
+        <div className="text-center mt-10 sm:hidden">
           <button
             onClick={() => navigate("/properties")}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            className="w-full bg-gray-100 text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-200"
           >
             View All Properties
           </button>
         </div>
-      </div>
-    </div>
+
+      </section>
+    </main>
   );
 };
 

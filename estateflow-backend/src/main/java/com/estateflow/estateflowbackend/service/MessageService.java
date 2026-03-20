@@ -131,7 +131,10 @@ public class MessageService {
         dto.setContent(message.getContent());
         dto.setSenderEmail(message.getSender().getEmail());
         dto.setReceiverEmail(message.getReceiver().getEmail());
+        dto.setSenderName(message.getSender().getFullName());
+        dto.setReceiverName(message.getReceiver().getFullName());
         dto.setPropertyId(message.getProperty().getId());
+        dto.setPropertyTitle(message.getProperty().getTitle());
         dto.setSenderId(message.getSender().getId());
         dto.setReceiverId(message.getReceiver().getId());
         dto.setIsRead(message.getIsRead());

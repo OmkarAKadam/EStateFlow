@@ -5,6 +5,7 @@ import { getImagesByProperty } from "../services/imageService";
 import { addFavorite } from "../services/favoriteService";
 import { sendMessage } from "../services/messageService";
 import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
@@ -13,45 +14,60 @@ const PropertyDetailPage = () => {
   const [property, setProperty] = useState(null);
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
 
   const { user } = useContext(AuthContext);
 
-  const isOwner = property && user?.id === property.ownerId;
+  const isLoggedIn = !!user;
+
+  const isOwner =
+    property &&
+    (Number(user?.id) === Number(property.ownerId) ||
+      user?.sub === property.ownerEmail);
 
   useEffect(() => {
-    loadProperty();
-    loadImages();
+    loadData();
   }, [id]);
 
-  const loadProperty = async () => {
+  const loadData = async () => {
+    setLoading(true);
     try {
-      const response = await getPropertyById(id);
-      setProperty(response.data);
-    } catch (error) {
-      console.error("Failed to load property", error);
-    }
-  };
-
-  const loadImages = async () => {
-    try {
-      const response = await getImagesByProperty(id);
-      setImages(response.data);
-    } catch (error) {
-      console.error("Failed to load images", error);
+      const [propRes, imgRes] = await Promise.all([
+        getPropertyById(id),
+        getImagesByProperty(id),
+      ]);
+      setProperty(propRes.data);
+      setImages(imgRes.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleFavorite = async () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
     try {
       await addFavorite(property.id);
-      alert("Added to favorites");
-    } catch (error) {
-      console.error("Favorite failed", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleSendMessage = async () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
     if (!message.trim()) return;
+
+    setIsSending(true);
 
     try {
       const res = await sendMessage({
@@ -70,126 +86,154 @@ const PropertyDetailPage = () => {
           initialMessage: res.data,
         },
       });
-    } catch (error) {
-      console.error("Message failed", error);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSending(false);
     }
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure?");
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete this property?")) return;
 
     try {
       await deleteProperty(property.id);
-      alert("Property deleted");
       navigate("/my-properties");
-    } catch (error) {
-      console.error("Delete failed", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  if (!property) {
+  if (loading) {
     return (
-      <div className="p-10 text-center text-gray-500">
-        Loading property...
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <Loader />
       </div>
     );
   }
-console.log("isOwner:", isOwner);
+
+  if (!property) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          Property not found
+        </h2>
+        <button
+          onClick={() => navigate("/properties")}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
+        >
+          Browse properties
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <div className="space-y-4">
-          {images.length === 0 ? (
-            <div className="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-500 rounded-lg">
-              No Images
-            </div>
-          ) : (
-            images.map((img) => (
-              <img
-                key={img.id}
-                src={`http://localhost:8080${img.imageUrl}`}
-                className="w-full h-72 object-cover rounded-lg"
-              />
-            ))
-          )}
-        </div>
+    <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {property.title}
+        </h1>
+        <p className="text-gray-500 mt-1">{property.location}</p>
+      </div>
 
-        <div className="space-y-4">
-          <h1 className="text-3xl font-bold text-gray-800">
-            {property.title}
-          </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {images.length === 0 ? (
+          <div className="h-80 bg-gray-100 flex items-center justify-center text-gray-400 rounded-lg">
+            No Images
+          </div>
+        ) : (
+          images.map((img) => (
+            <img
+              key={img.id}
+              src={`http://localhost:8080${img.imageUrl}`}
+              className="w-full h-80 object-cover rounded-lg"
+            />
+          ))
+        )}
+      </div>
 
-          <p className="text-gray-500">{property.location}</p>
-
-          <div className="flex gap-6 text-gray-600">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex gap-4 text-gray-600">
             <span>{property.propertyType}</span>
             <span>{property.bedrooms} Beds</span>
             <span>{property.bathrooms} Baths</span>
           </div>
 
-          <p className="text-3xl font-bold text-emerald-600">
+          <p className="text-2xl font-bold text-blue-600">
             ₹{property.price}
           </p>
 
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">Description</h3>
+            <p className="text-gray-600">
+              {property.description || "No description"}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
           <button
             onClick={handleFavorite}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            disabled={!isLoggedIn}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            ❤️ Add to Favorites
+            Add to Favorites
           </button>
 
-          {isOwner && (
-            <div className="flex gap-3">
+          {!isLoggedIn ? (
+            <div className="border rounded-lg p-4 text-center space-y-3">
+              <p className="text-gray-500 text-sm">
+                Please login to interact with this property
+              </p>
+
               <button
-                onClick={() => navigate(`/edit-property/${property.id}`)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                onClick={() => navigate("/login")}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg"
               >
-                ✏️ Edit
+                Login to Continue
+              </button>
+            </div>
+          ) : isOwner ? (
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={() =>
+                  navigate(`/edit-property/${property.id}`)
+                }
+                className="flex-1 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition"
+              >
+                Edit Property
               </button>
 
               <button
                 onClick={handleDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
               >
-                🗑 Delete
+                Delete
+              </button>
+            </div>
+          ) : (
+            <div className="border rounded-lg p-4 space-y-3">
+              <textarea
+                placeholder="Write a message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full border rounded-lg p-2"
+              />
+
+              <button
+                onClick={handleSendMessage}
+                disabled={!message.trim() || isSending}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg disabled:opacity-50"
+              >
+                {isSending ? "Sending..." : "Send Message"}
               </button>
             </div>
           )}
-
-          <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-gray-800">
-              Contact Owner
-            </h3>
-
-            <textarea
-              className="w-full border rounded-lg p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="4"
-              placeholder="Write your message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-
-            <button
-              onClick={handleSendMessage}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              Send Message
-            </button>
-          </div>
         </div>
       </div>
-
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-2 text-gray-800">
-          Description
-        </h3>
-
-        <p className="text-gray-600">{property.description}</p>
-      </div>
-    </div>
+    </main>
   );
 };
 
