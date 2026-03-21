@@ -43,28 +43,28 @@ const PropertyForm = ({ initialData = {}, onSubmit, isSubmitting }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
 
-      <input name="title" value={form.title} onChange={handleChange} placeholder="Title" className="w-full border p-2 rounded" required />
+      <input name="title" value={form.title} onChange={handleChange} placeholder="Property Title" className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
 
-      <input name="location" value={form.location} onChange={handleChange} placeholder="Location" className="w-full border p-2 rounded" required />
+      <input name="location" value={form.location} onChange={handleChange} placeholder="Location" className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
 
-      <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Price" className="w-full border p-2 rounded" required />
+      <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Price" className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
 
-      <select name="propertyType" value={form.propertyType} onChange={handleChange} className="w-full border p-2 rounded">
+      <select name="propertyType" value={form.propertyType} onChange={handleChange} className="w-full border p-3 rounded-lg">
         <option value="ROOM">Room</option>
         <option value="FLAT">Flat</option>
         <option value="HOUSE">House</option>
       </select>
 
       <div className="grid grid-cols-2 gap-4">
-        <input name="bedrooms" type="number" value={form.bedrooms} onChange={handleChange} placeholder="Bedrooms" className="border p-2 rounded" />
-        <input name="bathrooms" type="number" value={form.bathrooms} onChange={handleChange} placeholder="Bathrooms" className="border p-2 rounded" />
+        <input name="bedrooms" type="number" value={form.bedrooms} onChange={handleChange} placeholder="Bedrooms" className="border p-3 rounded-lg" />
+        <input name="bathrooms" type="number" value={form.bathrooms} onChange={handleChange} placeholder="Bathrooms" className="border p-3 rounded-lg" />
       </div>
 
-      <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="w-full border p-2 rounded" />
+      <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="w-full border p-3 rounded-lg h-28" />
 
-      <button disabled={isSubmitting} className="w-full bg-blue-600 text-white py-2 rounded">
+      <button disabled={isSubmitting} className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
         {isSubmitting ? "Saving..." : "Submit"}
       </button>
 

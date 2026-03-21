@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getPropertyById, deleteProperty } from "../services/propertyService";
-import { getImagesByProperty } from "../services/imageService";
+import { getPropertyImages } from "../services/imageService";
 import { addFavorite } from "../services/favoriteService";
 import { sendMessage } from "../services/messageService";
 import { AuthContext } from "../context/AuthContext";
@@ -35,7 +35,7 @@ const PropertyDetailPage = () => {
     try {
       const [propRes, imgRes] = await Promise.all([
         getPropertyById(id),
-        getImagesByProperty(id),
+        getPropertyImages(id),
       ]);
       setProperty(propRes.data);
       setImages(imgRes.data || []);
@@ -131,9 +131,7 @@ const PropertyDetailPage = () => {
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {property.title}
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900">{property.title}</h1>
         <p className="text-gray-500 mt-1">{property.location}</p>
       </div>
 
@@ -143,13 +141,20 @@ const PropertyDetailPage = () => {
             No Images
           </div>
         ) : (
-          images.map((img) => (
-            <img
-              key={img.id}
-              src={`http://localhost:8080${img.imageUrl}`}
-              className="w-full h-80 object-cover rounded-lg"
-            />
-          ))
+          images.map((img) => {
+            const imageUrl = img.imageUrl.startsWith("http")
+              ? img.imageUrl
+              : `${import.meta.env.VITE_API_URL || "http://localhost:8080"}${img.imageUrl}`;
+
+            return (
+              <img
+                key={img.id}
+                src={imageUrl}
+                alt="property"
+                className="w-full h-80 object-cover rounded-lg"
+              />
+            );
+          })
         )}
       </div>
 
@@ -161,9 +166,7 @@ const PropertyDetailPage = () => {
             <span>{property.bathrooms} Baths</span>
           </div>
 
-          <p className="text-2xl font-bold text-blue-600">
-            ₹{property.price}
-          </p>
+          <p className="text-2xl font-bold text-blue-600">₹{property.price}</p>
 
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Description</h3>
@@ -198,9 +201,7 @@ const PropertyDetailPage = () => {
           ) : isOwner ? (
             <div className="flex gap-3 mt-4">
               <button
-                onClick={() =>
-                  navigate(`/edit-property/${property.id}`)
-                }
+                onClick={() => navigate(`/edit-property/${property.id}`)}
                 className="flex-1 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition"
               >
                 Edit Property

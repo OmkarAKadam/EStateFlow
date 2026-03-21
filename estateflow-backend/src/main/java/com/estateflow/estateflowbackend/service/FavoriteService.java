@@ -40,15 +40,14 @@ public class FavoriteService {
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new RuntimeException("Property not found"));
 
-        if (favoriteRepository.findByUserAndProperty(user, property).isPresent()) {
-            throw new RuntimeException("Property already in favorites");
-        }
-
-        Favorite favorite = new Favorite();
-        favorite.setUser(user);
-        favorite.setProperty(property);
-
-        return favoriteRepository.save(favorite);
+        return favoriteRepository
+                .findByUserAndProperty(user, property)
+                .orElseGet(() -> {
+                    Favorite favorite = new Favorite();
+                    favorite.setUser(user);
+                    favorite.setProperty(property);
+                    return favoriteRepository.save(favorite);
+                });
     }
 
     public List<FavoriteResponseDTO> getMyFavorites() {
@@ -74,7 +73,11 @@ public class FavoriteService {
             response.setTitle(property.getTitle());
             response.setLocation(property.getLocation());
             response.setPrice(property.getPrice());
-            response.setPropertyType(property.getPropertyType().name());
+            response.setPropertyType(
+                    property.getPropertyType() != null
+                            ? property.getPropertyType().name()
+                            : null
+            );
             response.setOwnerEmail(property.getOwner().getEmail());
 
             return response;
@@ -83,6 +86,19 @@ public class FavoriteService {
     }
 
     public void removeFavorite(Long id) {
-        favoriteRepository.deleteById(id);
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        Favorite favorite = favoriteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Favorite not found"));
+
+        if (!favorite.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        favoriteRepository.delete(favorite);
     }
 }

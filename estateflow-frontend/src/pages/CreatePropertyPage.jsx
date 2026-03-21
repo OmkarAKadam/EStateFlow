@@ -6,7 +6,7 @@ import PropertyForm from "../components/PropertyForm";
 
 const CreatePropertyPage = () => {
   const navigate = useNavigate();
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (data) => {
@@ -14,8 +14,10 @@ const CreatePropertyPage = () => {
     try {
       const res = await createProperty(data);
 
-      if (image) {
-        await uploadPropertyImage(res.data.id, image);
+      for (let file of images) {
+        const formData = new FormData();
+        formData.append("file", file);
+        await uploadPropertyImage(res.data.id, formData);
       }
 
       navigate("/");
@@ -30,7 +32,12 @@ const CreatePropertyPage = () => {
     <div className="max-w-3xl mx-auto p-6 space-y-4">
       <h1 className="text-2xl font-bold">Create Property</h1>
 
-      <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+      <input
+        type="file"
+        multiple
+        onChange={(e) => setImages([...e.target.files])}
+        className="w-full"
+      />
 
       <PropertyForm onSubmit={handleSubmit} isSubmitting={loading} />
     </div>

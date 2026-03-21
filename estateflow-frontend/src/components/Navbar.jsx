@@ -51,7 +51,6 @@ const Navbar = () => {
 
           {isAuthenticated && role === "OWNER" && (
             <>
-              <NavLink to="/create-property">Create</NavLink>
               <NavLink to="/my-properties">My Listings</NavLink>
             </>
           )}
@@ -104,7 +103,6 @@ const Navbar = () => {
 
           {isAuthenticated && role === "OWNER" && (
             <>
-              <NavLink to="/create-property" onClick={() => setOpen(false)}>Create</NavLink>
               <NavLink to="/my-properties" onClick={() => setOpen(false)}>My Listings</NavLink>
             </>
           )}

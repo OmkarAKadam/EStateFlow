@@ -47,7 +47,7 @@ public class PropertyImageService {
         file.transferTo(new File(filePath));
 
         PropertyImage image = new PropertyImage();
-        image.setImageUrl(fileName);
+        image.setImageUrl("/uploads/" + fileName);
         image.setProperty(property);
 
         PropertyImage saved = imageRepository.save(image);
@@ -71,7 +71,7 @@ public class PropertyImageService {
                 .map(image -> {
                     PropertyImageResponseDTO dto = new PropertyImageResponseDTO();
                     dto.setId(image.getId());
-                    dto.setImageUrl("/images/" + image.getImageUrl());
+                    dto.setImageUrl(image.getImageUrl());
                     dto.setPropertyId(property.getId());
                     dto.setPropertyTitle(property.getTitle());
                     return dto;

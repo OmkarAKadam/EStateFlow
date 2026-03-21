@@ -75,6 +75,7 @@ public class PropertyService {
 
         property.setTitle(request.getTitle());
         property.setDescription(request.getDescription());
+        property.setPropertyType(request.getPropertyType());
         property.setPrice(request.getPrice());
         property.setLocation(request.getLocation());
         property.setPropertyType(request.getPropertyType());
@@ -135,8 +136,8 @@ public class PropertyService {
 
         favoriteRepository.deleteByProperty(property);
         messageRepository.deleteByProperty(property);
-        propertyRepository.delete(property);
         propertyImageRepository.deleteByProperty(property);
+        propertyRepository.delete(property);
     }
 
     public List<PropertyResponseDTO> searchByLocation(String location) {
@@ -175,7 +176,11 @@ public class PropertyService {
         response.setDescription(property.getDescription());
         response.setPrice(property.getPrice());
         response.setLocation(property.getLocation());
-        response.setPropertyType(property.getPropertyType());
+        response.setPropertyType(
+                property.getPropertyType() != null
+                        ? property.getPropertyType()
+                        : PropertyType.FLAT
+        );
         response.setBedrooms(property.getBedrooms());
         response.setBathrooms(property.getBathrooms());
         response.setOwnerId(property.getOwner().getId());

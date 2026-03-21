@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getImagesByProperty } from "../services/imageService";
+import { getPropertyImages } from "../services/imageService";
 import { addFavorite, removeFavorite } from "../services/favoriteService";
 import useAuth from "../hooks/useAuth";
 
@@ -19,7 +19,7 @@ const PropertyCard = ({
   useEffect(() => {
     const loadImages = async () => {
       try {
-        const response = await getImagesByProperty(property.id);
+        const response = await getPropertyImages(property.id);
         setImages(response.data || []);
       } catch {
         console.error("Failed to load images");
@@ -43,13 +43,17 @@ const PropertyCard = ({
         setIsFavorite(true);
       }
     } catch (error) {
-      console.error("Favorite error:", error);
+      if (error.response?.status === 400) {
+        setIsFavorite(true);
+      }
     }
   };
 
   const imageUrl =
     images.length > 0
-      ? `${import.meta.env.VITE_API_URL || "http://localhost:8080"}${images[0].imageUrl}`
+      ? images[0].imageUrl.startsWith("http")
+        ? images[0].imageUrl
+        : `${import.meta.env.VITE_API_URL}${images[0].imageUrl}`
       : null;
 
   return (

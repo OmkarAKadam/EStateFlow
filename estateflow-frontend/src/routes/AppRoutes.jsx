@@ -21,7 +21,14 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/properties" element={<PropertyListPage />} />
       <Route path="/properties/:id" element={<PropertyDetailPage />} />
-      <Route path="/create-property" element={<CreatePropertyPage />} />
+      <Route
+        path="/create-property"
+        element={
+          <ProtectedRoute requiredRole="OWNER">
+            <CreatePropertyPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route
@@ -40,8 +47,22 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="/messages" element={<MessagesPage />} />
-      <Route path="/edit-property/:id" element={<EditPropertyPage />} />
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <MessagesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/edit-property/:id"
+        element={
+          <ProtectedRoute requiredRole="OWNER">
+            <EditPropertyPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
