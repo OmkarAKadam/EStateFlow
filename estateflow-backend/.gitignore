@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+### Uploads ###
+estateflow-backend/uploads/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
