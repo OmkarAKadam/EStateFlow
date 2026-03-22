@@ -1,4 +1,4 @@
-package com.estateflow.estateflowbackend;
+package com.estateflow.estateflowbackend.util;
 
 import com.estateflow.estateflowbackend.entity.*;
 import com.estateflow.estateflowbackend.repository.*;

@@ -33,9 +33,10 @@ const PropertyListPage = () => {
       setProperties(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (err) {
-      console.error(err);
-      setError("Failed to load properties.");
-    } finally {
+  const errorMsg =
+    err.response?.data?.message || "Failed to load properties.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };
@@ -49,9 +50,11 @@ const PropertyListPage = () => {
       setProperties(res.data);
       setTotalPages(1);
       setPage(0);
-    } catch {
-      setError("Location search failed.");
-    } finally {
+    }  catch (err) {
+  const errorMsg =
+    err.response?.data?.message || "Location search failed.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };
@@ -65,9 +68,11 @@ const PropertyListPage = () => {
       setProperties(res.data);
       setTotalPages(1);
       setPage(0);
-    } catch {
-      setError("Price search failed.");
-    } finally {
+    } catch (err) {
+  const errorMsg =
+    err.response?.data?.message || "Price search failed.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };
@@ -81,9 +86,11 @@ const PropertyListPage = () => {
       setProperties(res.data);
       setTotalPages(1);
       setPage(0);
-    } catch {
-      setError("Type filter failed.");
-    } finally {
+    } catch (err) {
+  const errorMsg =
+    err.response?.data?.message || "Type filter failed.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };

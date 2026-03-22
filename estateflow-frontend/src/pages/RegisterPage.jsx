@@ -54,10 +54,10 @@ const RegisterPage = () => {
       });
 
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "Registration failed. Please try again."
-      );
+      const errorMsg =
+  err.response?.data?.message || "Registration failed. Please try again.";
+
+setError(errorMsg);
     } finally {
       setLoading(false);
     }

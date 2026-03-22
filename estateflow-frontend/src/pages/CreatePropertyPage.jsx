@@ -22,8 +22,10 @@ const CreatePropertyPage = () => {
 
       navigate("/");
     } catch (err) {
-      console.error(err);
-    } finally {
+  const errorMsg =
+    err.response?.data?.message || "Failed to create property";
+  alert(errorMsg);
+} finally {
       setLoading(false);
     }
   };

@@ -23,8 +23,10 @@ const MyPropertiesPage = () => {
       const response = await getMyProperties();
       setProperties(response.data || []);
     } catch (err) {
-      setError("Failed to load properties.");
-    } finally {
+  const errorMsg =
+    err.response?.data?.message || "Failed to load properties.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };
@@ -39,8 +41,10 @@ const MyPropertiesPage = () => {
       setProperties((prev) => prev.filter((p) => p.id !== id));
 
     } catch (err) {
-      alert("Delete failed");
-    }
+  const errorMsg =
+    err.response?.data?.message || "Delete failed";
+  alert(errorMsg);
+}
   };
 
   if (loading) {

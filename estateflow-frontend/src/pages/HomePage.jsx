@@ -24,9 +24,11 @@ const HomePage = () => {
       const res = await getAllProperties(0);
       setProperties(res.data.content.slice(0, 6));
     } catch (err) {
-      console.error(err);
-      setError("Unable to load properties. Try again later.");
-    } finally {
+  const errorMsg =
+    err.response?.data?.message ||
+    "Unable to load properties. Try again later.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };
@@ -44,9 +46,10 @@ const HomePage = () => {
       const res = await searchByLocation(search);
       setProperties(res.data);
     } catch (err) {
-      console.error(err);
-      setError("Search failed. Try again.");
-    } finally {
+  const errorMsg =
+    err.response?.data?.message || "Search failed. Try again.";
+  setError(errorMsg);
+} finally {
       setLoading(false);
     }
   };

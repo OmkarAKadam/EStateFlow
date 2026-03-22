@@ -54,7 +54,7 @@ public class PropertyImageService {
 
         PropertyImageResponseDTO response = new PropertyImageResponseDTO();
         response.setId(saved.getId());
-        response.setImageUrl("/images/" + saved.getImageUrl());
+        response.setImageUrl(saved.getImageUrl());
         response.setPropertyId(property.getId());
         response.setPropertyTitle(property.getTitle());
 
@@ -84,7 +84,7 @@ public class PropertyImageService {
         PropertyImage image = imageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Image not found"));
 
-        String path = System.getProperty("user.dir") + "/uploads/" + image.getImageUrl();
+        String path = System.getProperty("user.dir") + image.getImageUrl();
 
         File file = new File(path);
 

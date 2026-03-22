@@ -49,7 +49,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
     try {
       const res = await getConversation(
         activeChat.userId,
-        activeChat.propertyId
+        activeChat.propertyId,
       );
 
       const newMessages = Array.isArray(res.data) ? res.data : [];
@@ -92,8 +92,8 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         return [...prev, res.data];
       });
     } catch (err) {
-      console.error(err);
-      setText(currentText);
+      const errorMsg = err.response?.data?.message || "Something went wrong";
+      console.error(errorMsg);
     }
   };
 
@@ -108,9 +108,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50 text-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Messages
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">Messages</h2>
           <p className="text-sm text-gray-500">
             Select a conversation to start chatting
           </p>
@@ -121,7 +119,6 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
 
   return (
     <div className="h-full flex flex-col bg-white border">
-
       {/* Header */}
       <div className="px-6 py-4 border-b flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700">
@@ -129,12 +126,8 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         </div>
 
         <div>
-          <h2 className="font-semibold text-gray-900">
-            {activeChat.name}
-          </h2>
-          <p className="text-xs text-gray-500">
-            {activeChat.propertyTitle}
-          </p>
+          <h2 className="font-semibold text-gray-900">{activeChat.name}</h2>
+          <p className="text-xs text-gray-500">{activeChat.propertyTitle}</p>
         </div>
       </div>
 
@@ -150,8 +143,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
           </div>
         ) : (
           messages.map((msg) => {
-            const isCurrentUser =
-              msg.senderEmail === currentUserEmail;
+            const isCurrentUser = msg.senderEmail === currentUserEmail;
 
             return (
               <div
@@ -178,10 +170,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
       </div>
 
       {/* Input */}
-      <form
-        onSubmit={handleSend}
-        className="p-4 border-t flex gap-3 bg-white"
-      >
+      <form onSubmit={handleSend} className="p-4 border-t flex gap-3 bg-white">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}

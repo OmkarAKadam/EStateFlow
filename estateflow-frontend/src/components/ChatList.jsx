@@ -74,8 +74,10 @@ const ChatList = ({ onSelectChat, activeChat }) => {
       const chats = buildConversations(messages);
       setConversations(chats);
     } catch (err) {
-      console.error(err);
-    } finally {
+  const errorMsg =
+    err.response?.data?.message || "Something went wrong";
+  console.error(errorMsg);
+} finally {
       setLoading(false);
     }
   };

@@ -58,7 +58,7 @@ public class FavoriteService {
                 .getName();
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Favorite not found"));
 
         List<Favorite> favorites = favoriteRepository.findByUser(user);
 

@@ -14,8 +14,10 @@ const FavoritesPage = () => {
       const response = await getFavorites();
       setFavorites(response.data);
     } catch (error) {
-      console.error("Failed to load favorites", error);
-    }
+  const errorMsg =
+    error.response?.data?.message || "Failed to load favorites";
+  console.error(errorMsg);
+}
   };
 
   return (

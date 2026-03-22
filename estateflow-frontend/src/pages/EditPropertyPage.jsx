@@ -44,9 +44,11 @@ const EditPropertyPage = () => {
       }
 
       navigate(`/properties/${id}`);
-    } catch {
-      console.error("Update failed");
-    } finally {
+    } catch (err) {
+  const errorMsg =
+    err.response?.data?.message || "Update failed";
+  alert(errorMsg);
+} finally {
       setLoading(false);
     }
   };

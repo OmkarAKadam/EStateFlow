@@ -102,7 +102,7 @@ public class PropertyService {
                 .getName();
 
         User owner = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Property not found"));
 
         List<Property> properties = propertyRepository.findByOwner(owner);
 

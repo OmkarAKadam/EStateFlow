@@ -39,9 +39,11 @@ const PropertyDetailPage = () => {
       ]);
       setProperty(propRes.data);
       setImages(imgRes.data || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
+    }  catch (err) {
+  const errorMsg =
+    err.response?.data?.message || "Failed to load property";
+  console.error(errorMsg);
+} finally {
       setLoading(false);
     }
   };
@@ -55,8 +57,10 @@ const PropertyDetailPage = () => {
     try {
       await addFavorite(property.id);
     } catch (err) {
-      console.error(err);
-    }
+  const errorMsg =
+    err.response?.data?.message || "Failed to add favorite";
+  console.error(errorMsg);
+}
   };
 
   const handleSendMessage = async () => {
@@ -87,8 +91,10 @@ const PropertyDetailPage = () => {
         },
       });
     } catch (err) {
-      console.error(err);
-    } finally {
+  const errorMsg =
+    err.response?.data?.message || "Failed to send message";
+  console.error(errorMsg);
+} finally {
       setIsSending(false);
     }
   };
@@ -100,8 +106,10 @@ const PropertyDetailPage = () => {
       await deleteProperty(property.id);
       navigate("/my-properties");
     } catch (err) {
-      console.error(err);
-    }
+  const errorMsg =
+    err.response?.data?.message || "Delete failed";
+  console.error(errorMsg);
+}
   };
 
   if (loading) {
@@ -144,7 +152,7 @@ const PropertyDetailPage = () => {
           images.map((img) => {
             const imageUrl = img.imageUrl.startsWith("http")
               ? img.imageUrl
-              : `${import.meta.env.VITE_API_URL || "http://localhost:8080"}${img.imageUrl}`;
+              : `${import.meta.env.VITE_API_URL}${img.imageUrl}`;
 
             return (
               <img

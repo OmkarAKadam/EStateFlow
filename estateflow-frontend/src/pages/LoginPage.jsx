@@ -56,11 +56,10 @@ const LoginPage = () => {
       navigate("/");
 
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        "Login failed. Try again."
-      );
+      const errorMsg =
+  err.response?.data?.message || "Login failed. Try again.";
+
+setError(errorMsg);
     } finally {
       setLoading(false);
     }
