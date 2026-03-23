@@ -1,7 +1,6 @@
 package com.estateflow.estateflowbackend.controller;
 
 import com.estateflow.estateflowbackend.dto.FavoriteResponseDTO;
-import com.estateflow.estateflowbackend.entity.Favorite;
 import com.estateflow.estateflowbackend.service.FavoriteService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,7 @@ public class FavoriteController {
     }
 
     @PostMapping("/{propertyId}")
-    public Favorite addFavorite(@PathVariable Long propertyId) {
+    public FavoriteResponseDTO addFavorite(@PathVariable Long propertyId) {
         return favoriteService.addFavorite(propertyId);
     }
 

@@ -2,7 +2,6 @@ package com.estateflow.estateflowbackend.controller;
 
 import com.estateflow.estateflowbackend.dto.PropertyRequestDTO;
 import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
-import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.PropertyType;
 import com.estateflow.estateflowbackend.service.PropertyService;
 import jakarta.validation.Valid;

@@ -5,10 +5,12 @@ import com.estateflow.estateflowbackend.dto.MessageResponseDTO;
 import com.estateflow.estateflowbackend.entity.Message;
 import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.User;
+import com.estateflow.estateflowbackend.exception.ResourceNotFoundException;
+import com.estateflow.estateflowbackend.exception.UnauthorizedException;
 import com.estateflow.estateflowbackend.repository.MessageRepository;
 import com.estateflow.estateflowbackend.repository.PropertyRepository;
 import com.estateflow.estateflowbackend.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.estateflow.estateflowbackend.util.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,30 +21,27 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final PropertyRepository propertyRepository;
+    private final AuthUtil authUtil;
 
     public MessageService(MessageRepository messageRepository,
                           UserRepository userRepository,
-                          PropertyRepository propertyRepository) {
+                          PropertyRepository propertyRepository,
+                          AuthUtil authUtil) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.propertyRepository = propertyRepository;
+        this.authUtil = authUtil;
     }
 
     public MessageResponseDTO sendMessage(MessageRequestDTO request) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User sender = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
+        User sender = getCurrentUser();
 
         User receiver = userRepository.findById(request.getReceiverId())
-                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Receiver not found"));
 
         Property property = propertyRepository.findById(request.getPropertyId())
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         Message message = new Message();
         message.setSender(sender);
@@ -50,20 +49,12 @@ public class MessageService {
         message.setProperty(property);
         message.setContent(request.getContent());
 
-        Message saved = messageRepository.save(message);
-
-        return mapToResponse(saved);
+        return mapToResponse(messageRepository.save(message));
     }
 
     public List<MessageResponseDTO> getInbox() {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User receiver = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User receiver = getCurrentUser();
 
         return messageRepository.findByReceiver(receiver)
                 .stream()
@@ -71,15 +62,19 @@ public class MessageService {
                 .toList();
     }
 
+    public List<MessageResponseDTO> getSent() {
+
+        User sender = getCurrentUser();
+
+        return messageRepository.findBySender(sender)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
     public List<MessageResponseDTO> getAllUserMessages() {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = getCurrentUser();
 
         return messageRepository
                 .findAllUserMessages(user.getId())
@@ -88,39 +83,38 @@ public class MessageService {
                 .toList();
     }
 
-    public List<MessageResponseDTO> getSent() {
+    public void markAsRead(Long id) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        User currentUser = getCurrentUser();
 
-        User sender = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Message message = messageRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
-        return messageRepository.findBySender(sender)
+        if (!message.getReceiver().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("Not allowed to mark this message");
+        }
+
+        message.setIsRead(true);
+        messageRepository.save(message);
+    }
+
+    public List<MessageResponseDTO> getConversation(Long otherUserId, Long propertyId) {
+
+        User currentUser = getCurrentUser();
+
+        return messageRepository
+                .findConversation(currentUser.getId(), otherUserId, propertyId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
-    public void markAsRead(Long id) {
+    private User getCurrentUser() {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        String email = authUtil.getCurrentUserEmail();
 
-        Message message = messageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Message not found"));
-
-        if (!message.getReceiver().getEmail().equals(email)) {
-            throw new RuntimeException("Unauthorized");
-        }
-
-        message.setIsRead(true);
-
-        messageRepository.save(message);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private MessageResponseDTO mapToResponse(Message message) {
@@ -141,22 +135,5 @@ public class MessageService {
         dto.setCreatedAt(message.getCreatedAt());
 
         return dto;
-    }
-
-    public List<MessageResponseDTO> getConversation(Long otherUserId, Long propertyId) {
-
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User currentUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return messageRepository
-                .findConversation(currentUser.getId(), otherUserId, propertyId)
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
     }
 }

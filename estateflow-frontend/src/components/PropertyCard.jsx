@@ -65,9 +65,6 @@ const PropertyCard = ({
               src={imageUrl}
               alt={property.title}
               loading="lazy"
-              // onError={(e) => {
-              //   e.target.src = "../assets/fallback.jpg"
-              // }}
               className="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-110"
             />
           ) : (

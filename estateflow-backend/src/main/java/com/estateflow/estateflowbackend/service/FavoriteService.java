@@ -4,10 +4,12 @@ import com.estateflow.estateflowbackend.dto.FavoriteResponseDTO;
 import com.estateflow.estateflowbackend.entity.Favorite;
 import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.User;
+import com.estateflow.estateflowbackend.exception.ResourceNotFoundException;
+import com.estateflow.estateflowbackend.exception.UnauthorizedException;
 import com.estateflow.estateflowbackend.repository.FavoriteRepository;
 import com.estateflow.estateflowbackend.repository.PropertyRepository;
 import com.estateflow.estateflowbackend.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.estateflow.estateflowbackend.util.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,87 +20,87 @@ public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final AuthUtil authUtil;
 
     public FavoriteService(FavoriteRepository favoriteRepository,
                            PropertyRepository propertyRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           AuthUtil authUtil) {
         this.favoriteRepository = favoriteRepository;
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
+        this.authUtil = authUtil;
     }
 
-    public Favorite addFavorite(Long propertyId) {
+    public FavoriteResponseDTO addFavorite(Long propertyId) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = getCurrentUser();
 
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        return favoriteRepository
+        Favorite favorite = favoriteRepository
                 .findByUserAndProperty(user, property)
                 .orElseGet(() -> {
-                    Favorite favorite = new Favorite();
-                    favorite.setUser(user);
-                    favorite.setProperty(property);
-                    return favoriteRepository.save(favorite);
+                    Favorite fav = new Favorite();
+                    fav.setUser(user);
+                    fav.setProperty(property);
+                    return favoriteRepository.save(fav);
                 });
+
+        return mapToDTO(favorite);
     }
 
     public List<FavoriteResponseDTO> getMyFavorites() {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        User user = getCurrentUser();
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Favorite not found"));
-
-        List<Favorite> favorites = favoriteRepository.findByUser(user);
-
-        return favorites.stream().map(favorite -> {
-
-            Property property = favorite.getProperty();
-
-            FavoriteResponseDTO response = new FavoriteResponseDTO();
-
-            response.setFavoriteId(favorite.getId());
-            response.setPropertyId(property.getId());
-            response.setTitle(property.getTitle());
-            response.setLocation(property.getLocation());
-            response.setPrice(property.getPrice());
-            response.setPropertyType(
-                    property.getPropertyType() != null
-                            ? property.getPropertyType().name()
-                            : null
-            );
-            response.setOwnerEmail(property.getOwner().getEmail());
-
-            return response;
-
-        }).toList();
+        return favoriteRepository.findByUser(user)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     public void removeFavorite(Long id) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        User currentUser = getCurrentUser();
 
         Favorite favorite = favoriteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Favorite not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Favorite not found"));
 
-        if (!favorite.getUser().getEmail().equals(email)) {
-            throw new RuntimeException("Unauthorized");
+        if (!favorite.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("Not allowed to remove this favorite");
         }
 
         favoriteRepository.delete(favorite);
+    }
+
+    private User getCurrentUser() {
+
+        String email = authUtil.getCurrentUserEmail();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private FavoriteResponseDTO mapToDTO(Favorite favorite) {
+
+        Property property = favorite.getProperty();
+
+        FavoriteResponseDTO response = new FavoriteResponseDTO();
+
+        response.setFavoriteId(favorite.getId());
+        response.setPropertyId(property.getId());
+        response.setTitle(property.getTitle());
+        response.setLocation(property.getLocation());
+        response.setPrice(property.getPrice());
+        response.setPropertyType(
+                property.getPropertyType() != null
+                        ? property.getPropertyType().name()
+                        : null
+        );
+        response.setOwnerEmail(property.getOwner().getEmail());
+
+        return response;
     }
 }

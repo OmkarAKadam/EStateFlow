@@ -5,11 +5,13 @@ import com.estateflow.estateflowbackend.dto.PropertyResponseDTO;
 import com.estateflow.estateflowbackend.entity.Property;
 import com.estateflow.estateflowbackend.entity.PropertyType;
 import com.estateflow.estateflowbackend.entity.User;
+import com.estateflow.estateflowbackend.exception.ResourceNotFoundException;
+import com.estateflow.estateflowbackend.exception.UnauthorizedException;
 import com.estateflow.estateflowbackend.repository.*;
+import com.estateflow.estateflowbackend.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,25 +25,25 @@ public class PropertyService {
     private final FavoriteRepository favoriteRepository;
     private final MessageRepository messageRepository;
     private final PropertyImageRepository propertyImageRepository;
+    private final AuthUtil authUtil;
 
     public PropertyService(PropertyRepository propertyRepository,
-                           UserRepository userRepository, FavoriteRepository favoriteRepository, MessageRepository messageRepository, PropertyImageRepository propertyImageRepository) {
+                           UserRepository userRepository,
+                           FavoriteRepository favoriteRepository,
+                           MessageRepository messageRepository,
+                           PropertyImageRepository propertyImageRepository,
+                           AuthUtil authUtil) {
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
         this.favoriteRepository = favoriteRepository;
         this.messageRepository = messageRepository;
         this.propertyImageRepository = propertyImageRepository;
+        this.authUtil = authUtil;
     }
 
     public PropertyResponseDTO createProperty(PropertyRequestDTO request) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        User owner = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User owner = getCurrentUser();
 
         Property property = new Property();
 
@@ -54,23 +56,18 @@ public class PropertyService {
         property.setBathrooms(request.getBathrooms());
         property.setOwner(owner);
 
-        Property saved = propertyRepository.save(property);
-
-        return mapToResponse(saved);
+        return mapToResponse(propertyRepository.save(property));
     }
 
     public PropertyResponseDTO updateProperty(Long id, PropertyRequestDTO request) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        User currentUser = getCurrentUser();
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        if (!property.getOwner().getEmail().equals(email)) {
-            throw new RuntimeException("You are not allowed to update this property");
+        if (!property.getOwner().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You are not allowed to update this property");
         }
 
         property.setTitle(request.getTitle());
@@ -78,35 +75,23 @@ public class PropertyService {
         property.setPropertyType(request.getPropertyType());
         property.setPrice(request.getPrice());
         property.setLocation(request.getLocation());
-        property.setPropertyType(request.getPropertyType());
         property.setBedrooms(request.getBedrooms());
         property.setBathrooms(request.getBathrooms());
 
-        Property updated = propertyRepository.save(property);
-
-        return mapToResponse(updated);
+        return mapToResponse(propertyRepository.save(property));
     }
 
     public Page<PropertyResponseDTO> getAllProperties(Pageable pageable) {
-
-        Page<Property> properties = propertyRepository.findAll(pageable);
-
-        return properties.map(this::mapToResponse);
+        return propertyRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     public List<PropertyResponseDTO> getMyProperties() {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        User owner = getCurrentUser();
 
-        User owner = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
-
-        List<Property> properties = propertyRepository.findByOwner(owner);
-
-        return properties.stream()
+        return propertyRepository.findByOwner(owner)
+                .stream()
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -114,7 +99,7 @@ public class PropertyService {
     public PropertyResponseDTO getPropertyById(Long id) {
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         return mapToResponse(property);
     }
@@ -122,21 +107,19 @@ public class PropertyService {
     @Transactional
     public void deleteProperty(Long id) {
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
+        User currentUser = getCurrentUser();
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        if (!property.getOwner().getEmail().equals(email)) {
-            throw new RuntimeException("You are not allowed to delete this property");
+        if (!property.getOwner().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You are not allowed to delete this property");
         }
 
         favoriteRepository.deleteByProperty(property);
         messageRepository.deleteByProperty(property);
         propertyImageRepository.deleteByProperty(property);
+
         propertyRepository.delete(property);
     }
 
@@ -165,6 +148,14 @@ public class PropertyService {
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    private User getCurrentUser() {
+
+        String email = authUtil.getCurrentUserEmail();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private PropertyResponseDTO mapToResponse(Property property) {

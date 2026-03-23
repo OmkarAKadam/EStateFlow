@@ -1,7 +1,6 @@
 package com.estateflow.estateflowbackend.controller;
 
 import com.estateflow.estateflowbackend.dto.PropertyImageResponseDTO;
-import com.estateflow.estateflowbackend.entity.PropertyImage;
 import com.estateflow.estateflowbackend.service.PropertyImageService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

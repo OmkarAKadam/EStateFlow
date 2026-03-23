@@ -1,9 +1,17 @@
 package com.estateflow.estateflowbackend.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "property_images")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PropertyImage {
 
     @Id
@@ -15,24 +23,4 @@ public class PropertyImage {
     @ManyToOne
     @JoinColumn(name = "property_id")
     private Property property;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public Property getProperty() {
-        return property;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public void setProperty(Property property) {
-        this.property = property;
-    }
 }

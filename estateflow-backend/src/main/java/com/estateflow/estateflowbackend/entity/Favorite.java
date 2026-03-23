@@ -1,10 +1,19 @@
 package com.estateflow.estateflowbackend.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "favorites")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Favorite {
 
     @Id
@@ -19,29 +28,11 @@ public class Favorite {
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    public Long getId() {
-        return id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Property getProperty() {
-        return property;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setProperty(Property property) {
-        this.property = property;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 }

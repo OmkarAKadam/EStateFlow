@@ -3,12 +3,16 @@ package com.estateflow.estateflowbackend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "messages")
 public class Message {
 
@@ -31,7 +35,17 @@ public class Message {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    private Boolean isRead = false;
+    @Column(nullable = false)
+    private Boolean isRead;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (isRead == null) {
+            isRead = false;
+        }
+    }
 }
