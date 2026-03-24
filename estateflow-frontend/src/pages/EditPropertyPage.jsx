@@ -45,10 +45,9 @@ const EditPropertyPage = () => {
 
       navigate(`/properties/${id}`);
     } catch (err) {
-  const errorMsg =
-    err.response?.data?.message || "Update failed";
-  alert(errorMsg);
-} finally {
+      const errorMsg = err.response?.data?.message || "Update failed";
+      alert(errorMsg);
+    } finally {
       setLoading(false);
     }
   };
@@ -57,6 +56,8 @@ const EditPropertyPage = () => {
     await deletePropertyImage(imgId);
     loadImages();
   };
+  
+  const BASE = import.meta.env.VITE_API_URL.replace("/api", "");
 
   if (!property) return <div className="p-6">Loading...</div>;
 
@@ -68,7 +69,7 @@ const EditPropertyPage = () => {
         {images.map((img) => {
           const imageUrl = img.imageUrl.startsWith("http")
             ? img.imageUrl
-            : `${import.meta.env.VITE_API_URL || "http://localhost:8080"}${img.imageUrl}`;
+            : `${BASE}${img.imageUrl}`;
 
           return (
             <div key={img.id} className="relative">

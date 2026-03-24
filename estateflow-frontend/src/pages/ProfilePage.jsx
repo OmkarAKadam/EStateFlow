@@ -79,7 +79,6 @@ const ProfilePage = () => {
   return (
     <main className="max-w-3xl mx-auto px-6 py-10 min-h-screen">
 
-      {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
           My Profile
@@ -89,7 +88,6 @@ const ProfilePage = () => {
         </p>
       </div>
 
-      {/* CARD */}
       <div className="bg-white border rounded-2xl shadow-sm p-8 space-y-6">
 
         {message && (
@@ -106,7 +104,6 @@ const ProfilePage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* EMAIL (READ ONLY) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -118,7 +115,6 @@ const ProfilePage = () => {
             />
           </div>
 
-          {/* FULL NAME */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Full Name
@@ -132,7 +128,6 @@ const ProfilePage = () => {
             />
           </div>
 
-          {/* PASSWORD */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               New Password
@@ -147,7 +142,6 @@ const ProfilePage = () => {
             />
           </div>
 
-          {/* BUTTON */}
           <button
             type="submit"
             disabled={saving}

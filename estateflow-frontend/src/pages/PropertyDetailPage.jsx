@@ -39,11 +39,10 @@ const PropertyDetailPage = () => {
       ]);
       setProperty(propRes.data);
       setImages(imgRes.data || []);
-    }  catch (err) {
-  const errorMsg =
-    err.response?.data?.message || "Failed to load property";
-  console.error(errorMsg);
-} finally {
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Failed to load property";
+      console.error(errorMsg);
+    } finally {
       setLoading(false);
     }
   };
@@ -57,10 +56,9 @@ const PropertyDetailPage = () => {
     try {
       await addFavorite(property.id);
     } catch (err) {
-  const errorMsg =
-    err.response?.data?.message || "Failed to add favorite";
-  console.error(errorMsg);
-}
+      const errorMsg = err.response?.data?.message || "Failed to add favorite";
+      console.error(errorMsg);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -91,10 +89,9 @@ const PropertyDetailPage = () => {
         },
       });
     } catch (err) {
-  const errorMsg =
-    err.response?.data?.message || "Failed to send message";
-  console.error(errorMsg);
-} finally {
+      const errorMsg = err.response?.data?.message || "Failed to send message";
+      console.error(errorMsg);
+    } finally {
       setIsSending(false);
     }
   };
@@ -106,11 +103,12 @@ const PropertyDetailPage = () => {
       await deleteProperty(property.id);
       navigate("/my-properties");
     } catch (err) {
-  const errorMsg =
-    err.response?.data?.message || "Delete failed";
-  console.error(errorMsg);
-}
+      const errorMsg = err.response?.data?.message || "Delete failed";
+      console.error(errorMsg);
+    }
   };
+
+  const BASE = import.meta.env.VITE_API_URL.replace("/api", "");
 
   if (loading) {
     return (
@@ -152,7 +150,7 @@ const PropertyDetailPage = () => {
           images.map((img) => {
             const imageUrl = img.imageUrl.startsWith("http")
               ? img.imageUrl
-              : `${import.meta.env.VITE_API_URL}${img.imageUrl}`;
+              : `${BASE}${img.imageUrl}`;
 
             return (
               <img

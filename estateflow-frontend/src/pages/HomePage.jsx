@@ -61,7 +61,6 @@ const HomePage = () => {
   return (
     <main className="flex flex-col min-h-screen">
 
-      {/* HERO */}
       <section className="relative w-full h-[480px] flex items-center justify-center px-6 text-center overflow-hidden">
 
         <div className="absolute inset-0 bg-gradient-to-br from-blue-700 to-indigo-700" />
@@ -104,7 +103,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* PROPERTIES */}
       <section className="max-w-7xl mx-auto px-6 py-16 w-full flex-grow">
 
         <div className="flex justify-between items-center mb-8">

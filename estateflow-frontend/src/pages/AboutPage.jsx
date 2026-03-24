@@ -4,7 +4,6 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen bg-white">
 
-      {/* HERO */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20 px-6 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
           About EstateFlow
@@ -15,10 +14,8 @@ const AboutPage = () => {
         </p>
       </section>
 
-      {/* CONTENT */}
       <section className="max-w-6xl mx-auto px-6 py-16 space-y-16">
 
-        {/* WHAT IS ESTATEFLOW */}
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -42,7 +39,6 @@ const AboutPage = () => {
           </div>
         </div>
 
-        {/* FEATURES */}
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
             Key Features
@@ -67,7 +63,6 @@ const AboutPage = () => {
           </div>
         </div>
 
-        {/* MISSION */}
         <div className="bg-gray-50 p-10 rounded-2xl text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Our Mission

@@ -119,7 +119,6 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
 
   return (
     <div className="h-full flex flex-col bg-white border">
-      {/* Header */}
       <div className="px-6 py-4 border-b flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700">
           {activeChat.name?.charAt(0)}
@@ -131,7 +130,6 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         </div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50">
         {loading && messages.length === 0 ? (
           <div className="text-center text-gray-400 text-sm">
@@ -169,7 +167,6 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <form onSubmit={handleSend} className="p-4 border-t flex gap-3 bg-white">
         <textarea
           value={text}

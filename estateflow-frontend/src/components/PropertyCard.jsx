@@ -49,11 +49,13 @@ const PropertyCard = ({
     }
   };
 
+  const BASE = import.meta.env.VITE_API_URL.replace("/api", "");
+
   const imageUrl =
     images.length > 0
       ? images[0].imageUrl.startsWith("http")
         ? images[0].imageUrl
-        : `${import.meta.env.VITE_API_URL}${images[0].imageUrl}`
+        : `${BASE}${images[0].imageUrl}`
       : null;
 
   return (

@@ -110,7 +110,6 @@ const PropertyListPage = () => {
   return (
     <main className="max-w-7xl mx-auto px-6 py-12 min-h-screen">
 
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
           Explore Properties
@@ -120,7 +119,6 @@ const PropertyListPage = () => {
         </p>
       </div>
 
-      {/* Filters */}
       <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-wrap gap-4 mb-10">
 
         <input
@@ -185,8 +183,6 @@ const PropertyListPage = () => {
           Reset
         </button>
       </div>
-
-      {/* Content */}
       {loading ? (
         <Loader />
       ) : error ? (
@@ -203,7 +199,6 @@ const PropertyListPage = () => {
         </div>
       )}
 
-      {/* Pagination */}
       {!loading && totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-10">
           <button

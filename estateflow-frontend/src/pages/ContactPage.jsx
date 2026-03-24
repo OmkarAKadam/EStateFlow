@@ -18,7 +18,6 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen bg-white">
 
-      {/* HERO */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20 px-6 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
           Contact Us
@@ -28,10 +27,8 @@ const ContactPage = () => {
         </p>
       </section>
 
-      {/* MAIN CONTENT */}
       <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12">
 
-        {/* LEFT SIDE INFO */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-900">
             Get in touch
@@ -49,7 +46,6 @@ const ContactPage = () => {
           </div>
         </div>
 
-        {/* FORM */}
         <div className="bg-white border rounded-2xl shadow-sm p-8">
           {isSubmitted ? (
             <div className="text-center space-y-4">

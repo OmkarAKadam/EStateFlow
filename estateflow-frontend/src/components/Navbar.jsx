@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import logo from "../assets/favicon.svg";
+
 
 const NavLink = ({ to, children, onClick }) => {
   const location = useLocation();
@@ -28,14 +30,15 @@ const Navbar = () => {
   return (
     <nav className="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200/70 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-
         <Link
           to="/"
           className="flex items-center gap-2 text-xl font-semibold text-gray-900"
         >
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold">E</span>
-          </div>
+          <img
+            src={logo}
+            alt="EstateFlow logo"
+            className="w-10 h-10 object-cover"
+          />
           EstateFlow
         </Link>
 
@@ -60,7 +63,6 @@ const Navbar = () => {
               <NavLink to="/profile">Profile</NavLink>
             </>
           )}
-
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -99,33 +101,49 @@ const Navbar = () => {
 
       {open && (
         <div className="md:hidden px-6 pb-6 space-y-2">
-          <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+          <NavLink to="/" onClick={() => setOpen(false)}>
+            Home
+          </NavLink>
 
           {isAuthenticated && (
             <>
-              <NavLink to="/profile" onClick={() => setOpen(false)}>Profile</NavLink>
-              <NavLink to="/favorites" onClick={() => setOpen(false)}>Favorites</NavLink>
-              <NavLink to="/messages" onClick={() => setOpen(false)}>Messages</NavLink>
+              <NavLink to="/profile" onClick={() => setOpen(false)}>
+                Profile
+              </NavLink>
+              <NavLink to="/favorites" onClick={() => setOpen(false)}>
+                Favorites
+              </NavLink>
+              <NavLink to="/messages" onClick={() => setOpen(false)}>
+                Messages
+              </NavLink>
             </>
           )}
 
           {isAuthenticated && role === "OWNER" && (
             <>
-              <NavLink to="/my-properties" onClick={() => setOpen(false)}>My Listings</NavLink>
+              <NavLink to="/my-properties" onClick={() => setOpen(false)}>
+                My Listings
+              </NavLink>
             </>
           )}
 
           {isAuthenticated && (
             <>
-              <NavLink to="/profile" onClick={() => setOpen(false)}>Profile</NavLink>
+              <NavLink to="/profile" onClick={() => setOpen(false)}>
+                Profile
+              </NavLink>
             </>
           )}
 
           <div className="pt-3 border-t border-gray-200">
             {!isAuthenticated ? (
               <>
-                <NavLink to="/login" onClick={() => setOpen(false)}>Login</NavLink>
-                <NavLink to="/register" onClick={() => setOpen(false)}>Register</NavLink>
+                <NavLink to="/login" onClick={() => setOpen(false)}>
+                  Login
+                </NavLink>
+                <NavLink to="/register" onClick={() => setOpen(false)}>
+                  Register
+                </NavLink>
               </>
             ) : (
               <button

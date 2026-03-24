@@ -4,7 +4,6 @@ const PrivacyPolicyPage = () => {
   return (
     <div className="min-h-screen bg-white">
 
-      {/* HERO */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16 px-6 text-center">
         <h1 className="text-4xl font-extrabold mb-2">
           Privacy Policy
@@ -14,7 +13,6 @@ const PrivacyPolicyPage = () => {
         </p>
       </section>
 
-      {/* CONTENT */}
       <section className="max-w-4xl mx-auto px-6 py-12 space-y-10 text-gray-700 leading-relaxed">
 
         <div>
