@@ -18,8 +18,8 @@ public class CorsConfig {
 
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "https://e-state-flow.vercel.app/",
-                                "http://localhost:5173"
+                                "http://localhost:5173",
+                                "https://e-state-flow.vercel.app"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("Authorization", "Content-Type");

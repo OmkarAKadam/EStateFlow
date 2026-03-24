@@ -1,8 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import logo from "../assets/favicon.svg";
-
+import logo from "../assets/logo.png";
 
 const NavLink = ({ to, children, onClick }) => {
   const location = useLocation();
@@ -32,14 +31,14 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           to="/"
-          className="flex items-center gap-2 text-xl font-semibold text-gray-900"
+          className="flex items-center  text-xl font-semibold text-gray-900 hover:text-indigo-600 transition-colors group"
         >
           <img
             src={logo}
             alt="EstateFlow logo"
-            className="w-10 h-10 object-cover"
+            className="w-12 h-12 object-contain transition-transform group-hover:scale-110"
           />
-          EstateFlow
+          <span className="tracking-tight">EstateFlow</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-2">
