@@ -15,7 +15,11 @@ public class EstateflowBackendApplication {
         String dbUser = dotenv.get("DB_USERNAME");
         String dbPass = dotenv.get("DB_PASSWORD");
         String jwtSecret = dotenv.get("JWT_SECRET");
+        String portStr = dotenv.get("PORT");
 
+        if (portStr != null && !portStr.isBlank()) {
+            System.setProperty("PORT", portStr);
+        }
         if (dbUrl != null) System.setProperty("DB_URL", dbUrl);
         if (dbUser != null) System.setProperty("DB_USERNAME", dbUser);
         if (dbPass != null) System.setProperty("DB_PASSWORD", dbPass);

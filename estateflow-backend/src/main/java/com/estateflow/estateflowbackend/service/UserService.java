@@ -6,6 +6,7 @@ import com.estateflow.estateflowbackend.entity.UserRole;
 import com.estateflow.estateflowbackend.exception.ResourceNotFoundException;
 import com.estateflow.estateflowbackend.repository.UserRepository;
 import com.estateflow.estateflowbackend.security.JwtService;
+import com.estateflow.estateflowbackend.util.AuthUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthUtil authUtil;
 
     public UserService(UserRepository userRepository,
                        BCryptPasswordEncoder passwordEncoder,
-                       JwtService jwtService) {
+                       JwtService jwtService, AuthUtil authUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.authUtil = authUtil;
     }
 
     public RegisterResponseDTO registerUser(RegisterRequestDTO request) {
@@ -64,6 +67,36 @@ public class UserService {
         );
 
         return mapToResponse(userRepository.save(user));
+    }
+
+    public UserResponseDTO getCurrentUser() {
+
+        String email = authUtil.getCurrentUserEmail();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return mapToResponse(user);
+    }
+
+    public UserResponseDTO updateCurrentUser(UserUpdateRequestDTO request) {
+
+        String email = authUtil.getCurrentUserEmail();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            user.setFullName(request.getFullName());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        User updated = userRepository.save(user);
+
+        return mapToResponse(updated);
     }
 
     public List<UserResponseDTO> getAllUsers() {

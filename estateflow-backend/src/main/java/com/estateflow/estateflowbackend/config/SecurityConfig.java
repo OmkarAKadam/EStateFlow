@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/property-images/**").hasRole("OWNER")
 
                         // AUTH REQUIRED
+                        .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/messages/**").authenticated()
                         .requestMatchers("/api/favorites/**").authenticated()
 

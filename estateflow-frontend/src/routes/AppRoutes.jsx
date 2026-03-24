@@ -5,6 +5,7 @@ import PropertyDetailPage from "../pages/PropertyDetailPage";
 import CreatePropertyPage from "../pages/CreatePropertyPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import ProfilePage from "../pages/ProfilePage";
 import MyPropertiesPage from "../pages/MyPropertiesPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FavoritesPage from "../pages/FavoritesPage";
@@ -31,6 +32,14 @@ const AppRoutes = () => {
       />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/my-properties"
         element={

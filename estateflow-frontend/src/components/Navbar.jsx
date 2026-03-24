@@ -54,6 +54,13 @@ const Navbar = () => {
               <NavLink to="/my-properties">My Listings</NavLink>
             </>
           )}
+
+          {isAuthenticated && (
+            <>
+              <NavLink to="/profile">Profile</NavLink>
+            </>
+          )}
+
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -96,6 +103,7 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
+              <NavLink to="/profile" onClick={() => setOpen(false)}>Profile</NavLink>
               <NavLink to="/favorites" onClick={() => setOpen(false)}>Favorites</NavLink>
               <NavLink to="/messages" onClick={() => setOpen(false)}>Messages</NavLink>
             </>
@@ -104,6 +112,12 @@ const Navbar = () => {
           {isAuthenticated && role === "OWNER" && (
             <>
               <NavLink to="/my-properties" onClick={() => setOpen(false)}>My Listings</NavLink>
+            </>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <NavLink to="/profile" onClick={() => setOpen(false)}>Profile</NavLink>
             </>
           )}
 

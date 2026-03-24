@@ -2,6 +2,7 @@ package com.estateflow.estateflowbackend.controller;
 
 import com.estateflow.estateflowbackend.dto.UserRequestDTO;
 import com.estateflow.estateflowbackend.dto.UserResponseDTO;
+import com.estateflow.estateflowbackend.dto.UserUpdateRequestDTO;
 import com.estateflow.estateflowbackend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,16 @@ public class UserController {
     @PostMapping
     public UserResponseDTO createUser(@Valid @RequestBody UserRequestDTO request) {
         return userService.createUser(request);
+    }
+
+    @GetMapping("/me")
+    public UserResponseDTO getCurrentUser() {
+        return userService.getCurrentUser();
+    }
+
+    @PutMapping("/me")
+    public UserResponseDTO updateCurrentUser(@RequestBody UserUpdateRequestDTO request) {
+        return userService.updateCurrentUser(request);
     }
 
     @GetMapping
