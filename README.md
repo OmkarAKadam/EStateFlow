@@ -1,260 +1,195 @@
-# EstateFlow
+# 🚀 EstateFlow — Full Stack Property Management Platform
 
-EstateFlow is a full-stack property listing platform developed as part of an internship project.  
-The system allows users to register, authenticate, browse properties, manage listings, and communicate with property owners through a secure messaging system.
+EstateFlow is a full-stack web application designed to simplify property discovery, listing management, and user communication within a unified platform.
 
-The backend is implemented using **Spring Boot with JWT-based authentication**, while the frontend is built using **React and Vite**.
-
-The application demonstrates a complete **RESTful architecture with role-based access control, secure authentication, and modular frontend architecture**.
+Built as part of an internship project, this system demonstrates a production-oriented architecture using **Spring Boot (backend)** and **React + Vite (frontend)**, with secure authentication and role-based access control.
 
 ---
 
-# Project Structure
+# 🧠 Overview
+
+EstateFlow enables:
+
+* Property owners to list and manage properties
+* Tenants to explore listings and connect with owners
+* Secure communication through an internal messaging system
+* Personalized experience via favorites and role-based features
+
+This project reflects real-world system design principles including:
+
+* RESTful API architecture
+* JWT-based authentication
+* Modular frontend structure
+* Scalable backend design
+
+---
+
+# 🏗️ Project Structure
 
 ```
-EstateFlow
+EstateFlow/
 │
-├── backend                # Spring Boot REST API
-├── frontend               # React + Vite frontend application
-├── docs                   # Architecture and planning documents
-├── postman                # Postman collection for API testing
+├── backend/        # Spring Boot REST API
+├── frontend/       # React + Vite application
+├── docs/           # Architecture & planning
+├── postman/        # API testing collection
 └── README.md
 ```
 
 ---
 
-# Technology Stack
+# ⚙️ Tech Stack
 
 ## Backend
 
-- Java  
-- Spring Boot  
-- Spring Security  
-- JWT Authentication  
-- Spring Data JPA  
-- MySQL  
-- Lombok  
+* Java
+* Spring Boot
+* Spring Security
+* JWT Authentication
+* Spring Data JPA
+* MySQL
+* Lombok
 
 ## Frontend
 
-- React  
-- Vite  
-- JavaScript  
-- CSS  
-- Axios  
-- React Router  
+* React
+* Vite
+* JavaScript
+* Tailwind CSS
+* Axios
+* React Router
 
 ## Tools
 
-- Git  
-- Postman  
-- Docker (planned)  
+* Git
+* Postman
+* Docker (planned)
 
 ---
 
-# Backend Features
+# 🔐 Authentication & Security
 
-## User Module
+* JWT-based authentication
+* Stateless session management
+* BCrypt password hashing
+* Role-based authorization (OWNER / TENANT)
+* Protected API endpoints via Spring Security
 
-- User registration  
-- Secure login with JWT authentication  
-- Password hashing using BCrypt  
-- DTO-based API responses  
-- Input validation  
+### Authentication Flow
 
----
-
-## Property Module
-
-- Create property listings  
-- Retrieve all properties  
-- Retrieve properties owned by logged-in user  
-- Retrieve property by ID  
-- Delete property  
-- Pagination support  
-
----
-
-## Favorites Module
-
-Users can save properties for quick access.
-
-Features:
-
-- Add property to favorites  
-- View favorite properties  
-- Remove property from favorites  
-
----
-
-## Messaging Module
-
-Users can communicate with property owners through an internal messaging system.
-
-Features:
-
-- Send messages regarding properties  
-- View received messages  
-- View sent messages  
-- Mark messages as read  
-- Reply to messages  
-
----
-
-## Security
-
-- JWT-based authentication  
-- Protected API endpoints  
-- Role-based access control  
-- Ownership-based property management  
-- Spring Security configuration  
-
----
-
-# Frontend Features
-
-The frontend consumes backend REST APIs and provides a complete user interface for interacting with the platform.
-
----
-
-# Frontend Architecture
-
-The frontend project is structured using modular components and service-based API communication.
-
-```
-src
-│
-├── api
-│   axios.js
-│
-├── services
-│   authService.js
-│   propertyService.js
-│   favoriteService.js
-│   messageService.js
-│   imageService.js
-│
-├── context
-│   AuthContext.jsx
-│
-├── hooks
-│   useAuth.js
-│
-├── components
-│   Navbar.jsx
-│   PropertyCard.jsx
-│   ProtectedRoute.jsx
-│
-├── pages
-│   LoginPage.jsx
-│   RegisterPage.jsx
-│   PropertyListPage.jsx
-│   PropertyDetailPage.jsx
-│   CreatePropertyPage.jsx
-│   MyPropertiesPage.jsx
-│   FavoritesPage.jsx
-│   InboxPage.jsx
-│   SentMessagesPage.jsx
-│
-├── routes
-│   AppRoutes.jsx
-│
-├── App.jsx
-└── main.jsx
-```
-
-Axios is configured globally to automatically attach the **JWT token** to authenticated API requests.
-
----
-
-# Authentication Flow
-
-1. User logs in using:
-
-```
-POST /api/auth/login
-```
-
-2. The server returns a **JWT token**
-
-3. The client stores the token and sends it with requests:
+1. User logs in → `/api/auth/login`
+2. Server returns JWT token
+3. Token stored on client
+4. Token attached in requests:
 
 ```
 Authorization: Bearer <token>
 ```
 
-4. Spring Security validates the token and sets the authenticated user in the **SecurityContext**.
+5. Backend validates token and sets user context
 
 ---
 
-# Role-Based Access
-
-The application supports multiple roles.
+# 👥 User Roles
 
 ## Guest
 
-- View property listings  
-- Register  
-- Login  
+* Browse properties
+* Register / Login
 
 ## Tenant
 
-- Browse properties  
-- Save properties to favorites  
-- Send messages to property owners  
+* Search properties
+* Add to favorites
+* Send messages
 
 ## Owner
 
-- Create property listings  
-- Manage personal property listings  
-- Receive messages from tenants  
+* Create listings
+* Manage properties
+* Receive messages
 
 ---
 
-# Implemented Frontend Pages
+# 🧩 Core Features
 
-## Authentication
+## 👤 User Module
 
-```
-LoginPage.jsx
-RegisterPage.jsx
-```
-
-## Property Browsing
-
-```
-PropertyListPage.jsx
-PropertyDetailPage.jsx
-```
-
-## Owner Features
-
-```
-CreatePropertyPage.jsx
-MyPropertiesPage.jsx
-```
-
-## User Features
-
-```
-FavoritesPage.jsx
-InboxPage.jsx
-SentMessagesPage.jsx
-```
+* Registration & login
+* JWT authentication
+* Profile management
+* Input validation
 
 ---
 
-# Property Search
+## 🏠 Property Module
 
-Users can search and filter property listings using multiple criteria.
+* Create / update / delete listings
+* Pagination support
+* Owner-specific property management
+* Search filters (location, price, type)
+
+---
+
+## ❤️ Favorites Module
+
+* Add/remove favorites
+* Personalized property list
+
+---
+
+## 💬 Messaging Module
+
+* Send messages to property owners
+* Inbox & sent messages
+* Conversation threads
+* Read/unread status
+
+---
+
+## 🖼️ Image Upload
+
+* Upload property images
+* File validation (type + size)
+* Static file serving
+
+---
+
+# 🎨 Frontend Architecture
+
+```
+src/
+│
+├── api/            # Axios config
+├── services/       # API service layer
+├── context/        # Auth state management
+├── hooks/          # Custom hooks
+├── components/     # Reusable UI
+├── pages/          # Application views
+├── routes/         # Routing config
+│
+├── App.jsx
+└── main.jsx
+```
+
+### Key Patterns
+
+* Centralized API handling via Axios
+* Context-based authentication state
+* Protected routes with role validation
+* Component-driven UI structure
+
+---
+
+# 🔍 Property Search
 
 Supported filters:
 
-- Location  
-- Price range  
-- Property type  
+* Location
+* Price range
+* Property type
 
-Backend endpoints used:
+Endpoints:
 
 ```
 GET /api/properties/search/location
@@ -264,55 +199,30 @@ GET /api/properties/search/type
 
 ---
 
-# Image Upload
+# 🚀 Running the Project
 
-Property owners can upload images for property listings.
+## Backend Setup
 
-Endpoint used:
-
-```
-POST /api/property-images/{propertyId}
-```
-
-Images are stored on the server and served through a static endpoint.
-
----
-
-# Running the Backend
-
-## 1. Clone the repository
-
-```
+```bash
 git clone <repository-url>
-```
-
-## 2. Navigate to backend
-
-```
 cd backend
 ```
 
-## 3. Configure database
+### Configure MySQL
 
-Create a MySQL database:
-
-```
+```sql
 CREATE DATABASE estateflow;
 ```
 
-Update database credentials in:
+Update credentials in `application.properties`
 
-```
-application.properties
-```
+### Run Backend
 
-## 4. Run the application
-
-```
+```bash
 mvn spring-boot:run
 ```
 
-Server will start at:
+Server:
 
 ```
 http://localhost:8080
@@ -320,27 +230,15 @@ http://localhost:8080
 
 ---
 
-# Running the Frontend
+## Frontend Setup
 
-Navigate to the frontend folder:
-
-```
+```bash
 cd frontend
-```
-
-Install dependencies:
-
-```
 npm install
-```
-
-Start the development server:
-
-```
 npm run dev
 ```
 
-Frontend will run at:
+Frontend:
 
 ```
 http://localhost:5173
@@ -348,62 +246,55 @@ http://localhost:5173
 
 ---
 
-# API Testing
+# 🧪 API Testing
 
-A Postman collection is included for testing backend endpoints.
+Postman collection included:
 
 ```
 postman/estateflow-api.postman_collection.json
 ```
 
-Recommended testing flow:
+### Suggested Testing Flow
 
-1. Register User  
-2. Login User  
-3. Create Property  
-4. Get Properties  
-5. Add Favorite  
-6. Send Message  
-
----
-
-# Current Platform Capabilities
-
-The EstateFlow platform currently supports:
-
-- User registration and login  
-- JWT authentication  
-- Role-based navigation  
-- Protected routes  
-- Property browsing  
-- Property detail view  
-- Property creation  
-- Image uploads  
-- Owner dashboard  
-- Property search filters  
-- Pagination  
-- Favorites system  
-- Messaging system  
-
-The project now functions as a **complete full-stack property marketplace MVP**.
+1. Register user
+2. Login user
+3. Create property
+4. Fetch properties
+5. Add favorite
+6. Send message
 
 ---
 
-# Future Improvements
+# 📦 Current Capabilities
 
-Possible improvements for future development:
+* JWT Authentication
+* Role-based access control
+* Property listing & management
+* Image uploads
+* Messaging system
+* Favorites system
+* Pagination & filtering
+* Protected frontend routes
 
-- Real-time chat interface  
-- Improved UI design  
-- Property editing and management  
-- Notification system  
-- Combined property search filters  
-- Admin moderation panel  
-- Docker-based deployment  
+This project functions as a **complete full-stack MVP for a property marketplace**.
 
 ---
 
-# Author
+# 🔮 Future Improvements
 
-**Omkar Kadam**  
-BCA Student — Maharaja Sayajirao University (MSU), Vadodara
+* Real-time chat (WebSocket)
+* Notification system
+* Advanced filtering (combined queries)
+* Admin dashboard
+* Cloud storage for images (S3 / Cloudinary)
+* Dockerized deployment
+
+---
+
+# 👨‍💻 Author
+
+**Omkar Kadam**
+BCA Student — MSU Vadodara
+Aspiring Full Stack Developer & Game Developer
+
+---
