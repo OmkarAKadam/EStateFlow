@@ -295,6 +295,6 @@ This project functions as a **complete full-stack MVP for a property marketplace
 
 **Omkar Kadam**
 BCA Student — MSU Vadodara
-Aspiring Full Stack Developer & Game Developer
+Aspiring Full Stack Developer
 
 ---
