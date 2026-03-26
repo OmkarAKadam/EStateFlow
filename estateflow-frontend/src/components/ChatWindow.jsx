@@ -13,6 +13,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const bottomRef = useRef(null);
 
@@ -49,7 +50,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
     try {
       const res = await getConversation(
         activeChat.userId,
-        activeChat.propertyId,
+        activeChat.propertyId
       );
 
       const newMessages = Array.isArray(res.data) ? res.data : [];
@@ -64,13 +65,10 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
       setMessages((prev) => {
         const prevIds = prev.map((m) => m.id).join(",");
         const newIds = newMessages.map((m) => m.id).join(",");
-
         if (prevIds === newIds) return prev;
         return newMessages;
       });
-    } catch (err) {
-      console.error(err);
-    }
+    } catch {}
   };
 
   const handleSend = async (e) => {
@@ -79,6 +77,7 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
 
     const currentText = text;
     setText("");
+    setSending(true);
 
     try {
       const res = await sendMessage({
@@ -87,13 +86,10 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         content: currentText,
       });
 
-      setMessages((prev) => {
-        if (prev.some((m) => m.id === res.data.id)) return prev;
-        return [...prev, res.data];
-      });
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || "Something went wrong";
-      console.error(errorMsg);
+      setMessages((prev) => [...prev, res.data]);
+    } catch {
+    } finally {
+      setSending(false);
     }
   };
 
@@ -104,21 +100,23 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
     }
   };
 
+  const formatTime = (date) => {
+    return new Date(date).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   if (!activeChat) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50 text-center">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Messages</h2>
-          <p className="text-sm text-gray-500">
-            Select a conversation to start chatting
-          </p>
-        </div>
+        <p className="text-gray-400">Select a conversation</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-white border">
+    <div className="h-full flex flex-col bg-white">
       <div className="px-6 py-4 border-b flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700">
           {activeChat.name?.charAt(0)}
@@ -130,10 +128,15 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-gray-50">
         {loading && messages.length === 0 ? (
-          <div className="text-center text-gray-400 text-sm">
-            Loading conversation...
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="h-10 w-2/3 bg-gray-200 animate-pulse rounded-lg"
+              />
+            ))}
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center text-gray-400 text-sm">
@@ -146,8 +149,8 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
             return (
               <div
                 key={msg.id}
-                className={`flex ${
-                  isCurrentUser ? "justify-end" : "justify-start"
+                className={`flex flex-col ${
+                  isCurrentUser ? "items-end" : "items-start"
                 }`}
               >
                 <div
@@ -159,6 +162,10 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
                 >
                   {msg.content}
                 </div>
+
+                <span className="text-xs text-gray-400 mt-1">
+                  {formatTime(msg.createdAt)}
+                </span>
               </div>
             );
           })
@@ -167,7 +174,10 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="p-4 border-t flex gap-3 bg-white">
+      <form
+        onSubmit={handleSend}
+        className="p-4 border-t flex gap-3 bg-white"
+      >
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -179,10 +189,10 @@ const ChatWindow = ({ activeChat, initialMessage }) => {
 
         <button
           type="submit"
-          disabled={!text.trim()}
-          className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          disabled={!text.trim() || sending}
+          className="bg-blue-600 text-white px-5 py-2 rounded-lg disabled:opacity-50"
         >
-          Send
+          {sending ? "..." : "Send"}
         </button>
       </form>
     </div>

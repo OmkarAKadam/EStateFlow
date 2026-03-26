@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getPropertyImages } from "../services/imageService";
 import { addFavorite, removeFavorite } from "../services/favoriteService";
 import useAuth from "../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const PropertyCard = ({
   property,
@@ -21,9 +22,7 @@ const PropertyCard = ({
       try {
         const response = await getPropertyImages(property.id);
         setImages(response.data || []);
-      } catch {
-        console.error("Failed to load images");
-      }
+      } catch {}
     };
 
     if (property?.id) loadImages();
@@ -37,15 +36,15 @@ const PropertyCard = ({
       if (isFavorite) {
         await removeFavorite(favoriteId);
         setIsFavorite(false);
+        toast.success("Removed from favorites");
         if (onUnfavorite) onUnfavorite();
       } else {
         await addFavorite(property.id);
         setIsFavorite(true);
+        toast.success("Added to favorites");
       }
-    } catch (error) {
-      if (error.response?.status === 400) {
-        setIsFavorite(true);
-      }
+    } catch {
+      toast.error("Action failed");
     }
   };
 
@@ -59,7 +58,7 @@ const PropertyCard = ({
       : null;
 
   return (
-    <article className="group relative flex flex-col bg-white rounded-3xl border border-gray-200/70 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1">
+    <article className="group relative flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-2xl transition duration-300 overflow-hidden">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
         <Link to={`/properties/${property.id}`} className="block w-full h-full">
           {imageUrl ? (
@@ -67,65 +66,53 @@ const PropertyCard = ({
               src={imageUrl}
               alt={property.title}
               loading="lazy"
-              className="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-110"
+              className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-medium">
-              No Image Available
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+              No Image
             </div>
           )}
         </Link>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
-
         {isAuthenticated && (
           <button
             onClick={handleFavoriteClick}
-            className="absolute top-3 right-3 p-2.5 rounded-full bg-white/80 hover:bg-white backdrop-blur-md shadow-md transition flex items-center justify-center text-lg z-10"
+            className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-lg"
           >
-            {isFavorite ? (
-              <span className="text-red-500 scale-110">❤️</span>
-            ) : (
-              <span className="text-gray-400 hover:text-red-500 transition">
-                🤍
-              </span>
-            )}
+            {isFavorite ? "❤️" : "🤍"}
           </button>
         )}
 
-        <div className="absolute top-3 left-3 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-xs font-semibold text-blue-700 shadow-sm">
+        <div className="absolute top-3 left-3 px-3 py-1 bg-white rounded-full text-xs font-semibold text-blue-600 shadow">
           {property.propertyType}
         </div>
       </div>
 
       <div className="p-5 flex flex-col flex-grow">
-        <Link to={`/properties/${property.id}`} className="block mb-2">
-          <h2 className="text-lg font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition">
+        <Link to={`/properties/${property.id}`}>
+          <h2 className="text-lg font-semibold text-gray-900 line-clamp-1 mb-1 group-hover:text-blue-600">
             {property.title}
           </h2>
         </Link>
 
-        <p className="text-sm text-gray-500 line-clamp-1 mb-4 flex items-center gap-1">
-          <span>📍</span>
-          {property.location}
+        <p className="text-sm text-gray-500 line-clamp-1 mb-3">
+          📍 {property.location}
         </p>
 
-        <div className="flex items-center gap-2 mb-5 text-xs font-medium">
-          <span className="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">
+        <div className="flex gap-2 mb-4 text-xs">
+          <span className="bg-gray-100 px-2 py-1 rounded">
             {property.bedrooms} Beds
           </span>
-          <span className="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">
+          <span className="bg-gray-100 px-2 py-1 rounded">
             {property.bathrooms} Baths
           </span>
         </div>
 
-        <div className="mt-auto pt-4 border-t border-gray-200 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-gray-400">Price</span>
-            <p className="text-blue-600 font-bold text-xl tracking-tight">
-              ₹{property.price?.toLocaleString() || property.price}
-            </p>
-          </div>
+        <div className="mt-auto flex items-center justify-between pt-3 border-t">
+          <p className="text-blue-600 font-bold text-lg">
+            ₹{property.price?.toLocaleString()}
+          </p>
 
           {isOwner ? (
             <div className="flex gap-2">
@@ -135,7 +122,7 @@ const PropertyCard = ({
                   e.stopPropagation();
                   window.location.href = `/edit-property/${property.id}`;
                 }}
-                className="text-sm bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition font-medium"
+                className="text-xs bg-yellow-500 text-white px-3 py-1.5 rounded"
               >
                 Edit
               </button>
@@ -146,7 +133,7 @@ const PropertyCard = ({
                   e.stopPropagation();
                   onDelete(property.id);
                 }}
-                className="text-sm bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-100 transition font-medium"
+                className="text-xs bg-red-100 text-red-600 px-3 py-1.5 rounded"
               >
                 Delete
               </button>
@@ -154,7 +141,7 @@ const PropertyCard = ({
           ) : (
             <Link
               to={`/properties/${property.id}`}
-              className="text-sm bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition font-medium shadow-sm"
+              className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded"
             >
               View
             </Link>

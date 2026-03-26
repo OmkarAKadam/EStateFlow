@@ -4,9 +4,11 @@ import { AuthContext } from "../context/AuthContext";
 
 const ChatList = ({ onSelectChat, activeChat }) => {
   const [conversations, setConversations] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useContext(AuthContext);
+  const [search, setSearch] = useState("");
 
+  const { user } = useContext(AuthContext);
   const currentUserEmail = user?.sub;
 
   useEffect(() => {
@@ -16,6 +18,21 @@ const ChatList = ({ onSelectChat, activeChat }) => {
     const interval = setInterval(loadChats, 3000);
     return () => clearInterval(interval);
   }, [currentUserEmail]);
+
+  useEffect(() => {
+    if (!search.trim()) {
+      setFiltered(conversations);
+    } else {
+      const lower = search.toLowerCase();
+      setFiltered(
+        conversations.filter(
+          (c) =>
+            c.name.toLowerCase().includes(lower) ||
+            c.propertyTitle.toLowerCase().includes(lower)
+        )
+      );
+    }
+  }, [search, conversations]);
 
   const buildConversations = (messages) => {
     if (!currentUserEmail) return [];
@@ -73,38 +90,59 @@ const ChatList = ({ onSelectChat, activeChat }) => {
       const messages = Array.isArray(res.data) ? res.data : [];
       const chats = buildConversations(messages);
       setConversations(chats);
+      setFiltered(chats);
     } catch (err) {
-  const errorMsg =
-    err.response?.data?.message || "Something went wrong";
-  console.error(errorMsg);
-} finally {
+      console.error(err.response?.data?.message || "Error");
+    } finally {
       setLoading(false);
     }
   };
 
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
   return (
-    <aside className="h-full flex flex-col bg-white border-r border-gray-200">
-      <div className="p-5 border-b">
-        <h2 className="text-base font-bold text-gray-800">
+    <aside className="h-full flex flex-col bg-white">
+      <div className="p-4 border-b space-y-3">
+        <h2 className="text-lg font-semibold text-gray-900">
           Conversations
         </h2>
+
+        <input
+          type="text"
+          placeholder="Search chats..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-3 py-2 text-sm border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {loading && conversations.length === 0 && (
-          <div className="p-6 text-center text-gray-400 text-sm">
-            Loading chats...
+        {loading && (
+          <div className="p-4 space-y-3">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="h-14 bg-gray-200 animate-pulse rounded-lg"
+              />
+            ))}
           </div>
         )}
 
-        {!loading && conversations.length === 0 && (
-          <div className="p-8 text-center text-gray-500 text-sm">
-            No conversations yet
+        {!loading && filtered.length === 0 && (
+          <div className="p-6 text-center text-gray-500 text-sm">
+            No conversations found
           </div>
         )}
 
-        <ul className="divide-y">
-          {conversations.map((chat) => {
+        <ul>
+          {filtered.map((chat) => {
             const isActive =
               activeChat?.userId === chat.userId &&
               activeChat?.propertyId === chat.propertyId;
@@ -120,37 +158,43 @@ const ChatList = ({ onSelectChat, activeChat }) => {
                       propertyTitle: chat.propertyTitle,
                     })
                   }
-                  className={`w-full text-left p-4 transition ${
+                  className={`w-full flex items-center gap-3 p-4 transition ${
                     isActive
-                      ? "bg-blue-50 border-l-4 border-blue-600"
-                      : "hover:bg-gray-50 border-l-4 border-transparent"
+                      ? "bg-blue-50"
+                      : "hover:bg-gray-50"
                   }`}
                 >
-                  <div className="flex justify-between items-start mb-1">
-                    <p className="font-semibold text-sm text-gray-900 truncate pr-2">
-                      {chat.name}
-                    </p>
-
-                    {chat.unreadCount > 0 && (
-                      <span className="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        {chat.unreadCount}
-                      </span>
-                    )}
+                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-sm">
+                    {getInitials(chat.name)}
                   </div>
 
-                  <p
-                    className={`text-sm truncate ${
-                      chat.unreadCount > 0
-                        ? "text-gray-900 font-medium"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {chat.lastMessage}
-                  </p>
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="flex justify-between items-center">
+                      <p className="font-medium text-sm text-gray-900 truncate">
+                        {chat.name}
+                      </p>
 
-                  <p className="text-xs text-gray-400 mt-1">
-                    {chat.propertyTitle}
-                  </p>
+                      {chat.unreadCount > 0 && (
+                        <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
+                          {chat.unreadCount}
+                        </span>
+                      )}
+                    </div>
+
+                    <p
+                      className={`text-sm truncate ${
+                        chat.unreadCount > 0
+                          ? "text-gray-900 font-medium"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {chat.lastMessage}
+                    </p>
+
+                    <p className="text-xs text-gray-400 truncate">
+                      {chat.propertyTitle}
+                    </p>
+                  </div>
                 </button>
               </li>
             );

@@ -19,7 +19,6 @@ const MessagesPage = () => {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 h-[calc(100vh-120px)] flex flex-col">
-      
       <div className="mb-4">
         <h1 className="text-2xl font-semibold text-gray-900">
           Messages
@@ -29,9 +28,8 @@ const MessagesPage = () => {
         </p>
       </div>
 
-      <div className="flex flex-1 overflow-hidden border rounded-2xl bg-white">
-
-        <div className="w-full md:w-1/3 border-r">
+      <div className="flex flex-1 overflow-hidden rounded-2xl bg-white shadow-md border">
+        <div className="w-full md:w-1/3 border-r bg-gray-50">
           <ChatList
             onSelectChat={setActiveChat}
             activeChat={activeChat}
@@ -39,19 +37,39 @@ const MessagesPage = () => {
         </div>
 
         <div className="hidden md:flex flex-col w-2/3">
-          <ChatWindow
-            activeChat={activeChat}
-            initialMessage={location.state?.initialMessage}
-          />
+          {activeChat ? (
+            <ChatWindow
+              activeChat={activeChat}
+              initialMessage={location.state?.initialMessage}
+            />
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-center">
+              <div>
+                <p className="text-gray-400 text-lg mb-2">
+                  Select a conversation
+                </p>
+                <p className="text-gray-500 text-sm">
+                  Choose a chat from the left to start messaging
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="md:hidden flex-1">
-          <ChatWindow
-            activeChat={activeChat}
-            initialMessage={location.state?.initialMessage}
-          />
+          {activeChat ? (
+            <ChatWindow
+              activeChat={activeChat}
+              initialMessage={location.state?.initialMessage}
+            />
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-center h-full">
+              <p className="text-gray-400">
+                Select a chat to start
+              </p>
+            </div>
+          )}
         </div>
-
       </div>
     </main>
   );
