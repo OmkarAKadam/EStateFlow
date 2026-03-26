@@ -20,5 +20,7 @@ public class PropertyResponseDTO {
     private Integer bathrooms;
     private Long ownerId;
     private String ownerEmail;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }
